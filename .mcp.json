@@ -1,0 +1,9 @@
+{
+    "mcpServers": {
+      "Agno": {
+        "name": "Agno",
+        "url": "https://docs.agno.com/mcp",
+        "headers": {}
+      }
+    }
+  }
