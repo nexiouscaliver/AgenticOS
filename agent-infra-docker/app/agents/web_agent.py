@@ -6,7 +6,7 @@ from agno.models.openai import OpenAIChat
 from agno.models.google import Gemini
 from agno.tools.duckduckgo import DuckDuckGoTools
 
-from ..db.session import db_url
+from db.session import db_url
 
 
 def get_web_agent(
@@ -20,7 +20,7 @@ def get_web_agent(
     - Structured information extraction and synthesis
     - Citation tracking and source evaluation
     """
-    from ..models.factory import ModelFactory, TaskType
+    from models.factory import ModelFactory, TaskType
     
     # Get optimal model for research tasks
     model = ModelFactory.get_optimal_model(
