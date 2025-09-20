@@ -60,11 +60,9 @@ class ModelFactory:
         "deepseek-chat": 0.00014,
         "deepseek-coder": 0.00014,
         
-        # GLM models
-        "glm-4": 0.00020,
-        "glm-4-air": 0.00015,
-        "glm-4-airx": 0.00025,
-        "glm-4-flash": 0.00010,
+        # GLM models (supported only)
+        "glm-4.5": 0.00020,
+        "glm-4.5-air": 0.00015,
         
         # Gemini models
         "gemini-2.0-flash": 0.00030,
@@ -79,13 +77,13 @@ class ModelFactory:
             "premium": "gemini-2.0-flash"
         },
         TaskType.CREATIVE: {
-            "budget": "glm-4-flash",
+            "budget": "glm-4.5-air",
             "balanced": "gpt-4o-mini",
             "premium": "gpt-4o"
         },
         TaskType.ANALYSIS: {
             "budget": "deepseek-chat",
-            "balanced": "glm-4-air",
+            "balanced": "glm-4.5-air",
             "premium": "gpt-4o"
         },
         TaskType.CODING: {
@@ -95,7 +93,7 @@ class ModelFactory:
         },
         TaskType.SIMPLE: {
             "budget": "deepseek-chat",
-            "balanced": "glm-4-flash",
+            "balanced": "glm-4.5-air",
             "premium": "gpt-4o-mini"
         },
         TaskType.COMPLEX: {
@@ -104,12 +102,12 @@ class ModelFactory:
             "premium": "gemini-1.5-pro"
         },
         TaskType.MULTILINGUAL: {
-            "budget": "glm-4-flash",
-            "balanced": "glm-4",
+            "budget": "glm-4.5-air",
+            "balanced": "glm-4.5",
             "premium": "gpt-4o"
         },
         TaskType.FAST: {
-            "budget": "glm-4-flash",
+            "budget": "glm-4.5-air",
             "balanced": "deepseek-chat",
             "premium": "gpt-4o-mini"
         }
