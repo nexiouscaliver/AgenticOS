@@ -6,10 +6,10 @@ from textwrap import dedent
 from agno.team import Team
 from agno.db.postgres import PostgresDb
 
-from ..agents.web_agent import get_web_agent
-from ..agents.research_analyst import get_research_analyst_agent
-from ..agents.fact_checker import get_fact_checker_agent
-from ..db.session import db_url
+from agents.web_agent import get_web_agent
+from agents.research_analyst import get_research_analyst_agent
+from agents.fact_checker import get_fact_checker_agent
+from db.session import db_url
 
 
 def get_research_team(debug_mode: bool = False) -> Team:
@@ -36,7 +36,7 @@ def get_research_team(debug_mode: bool = False) -> Team:
     fact_checker = get_fact_checker_agent(model_id="gpt-4o-mini", debug_mode=debug_mode)
     
     # Create a secondary web agent for additional research capacity
-    secondary_web_agent = get_web_agent(model_id="glm-4-flash", debug_mode=debug_mode)
+    secondary_web_agent = get_web_agent(model_id="glm-4.5-air", debug_mode=debug_mode)
     secondary_web_agent.id = "secondary-web-research-agent"
     secondary_web_agent.name = "Secondary Web Research Agent"
     
