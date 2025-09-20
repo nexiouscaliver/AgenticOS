@@ -9,7 +9,7 @@ from agno.tools.duckduckgo import DuckDuckGoTools
 from agno.vectordb.pgvector import PgVector, SearchType
 from agno.models.google import Gemini
 
-from ..db.session import db_url
+from db.session import db_url
 
 
 def get_agno_assist(
@@ -23,7 +23,7 @@ def get_agno_assist(
     - Version-specific implementation strategies
     - Performance optimization recommendations
     """
-    from ..models.factory import ModelFactory, TaskType
+    from models.factory import ModelFactory, TaskType
     
     # Get optimal model for analysis and documentation tasks
     model = ModelFactory.get_optimal_model(
@@ -145,7 +145,7 @@ def get_agno_assist(
                    "research_tasks": "deepseek-chat",     # $0.00014/1K tokens  
                    "creative_work": "gpt-4o",             # $0.003/1K tokens
                    "coding_help": "deepseek-coder",       # $0.00014/1K tokens
-                   "multilingual": "glm-4",               # $0.0002/1K tokens
+                   "multilingual": "glm-4.5",               # $0.0002/1K tokens
                }
                ```
 
