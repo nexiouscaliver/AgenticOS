@@ -3,25 +3,25 @@ Research Team - Coordinated multi-agent research system
 """
 
 from textwrap import dedent
-from agno.team import Team
-from agno.db.postgres import PostgresDb
 
-from agents.web_agent import get_web_agent
-from agents.research_analyst import get_research_analyst_agent
 from agents.fact_checker import get_fact_checker_agent
+from agents.research_analyst import get_research_analyst_agent
+from agents.web_agent import get_web_agent
+from agno.db.postgres import PostgresDb
+from agno.team import Team
 from db.session import db_url
 
 
 def get_research_team(debug_mode: bool = False) -> Team:
     """
     Research Team with specialized agents for comprehensive research
-    
+
     Team Members:
     1. Advanced Web Research Agent - Multi-source web investigation
     2. Research Analyst Agent - Academic-quality analysis and synthesis
     3. Fact Checker Agent - Verification and accuracy validation
     4. Enhanced Web Agent - Additional research capacity and verification
-    
+
     Team Capabilities:
     - Parallel research execution across multiple sources
     - Cross-verification and fact-checking protocols
@@ -29,25 +29,25 @@ def get_research_team(debug_mode: bool = False) -> Team:
     - Comprehensive analysis with multiple perspectives
     - Source credibility assessment and citation management
     """
-    
+
     # Initialize team members with cost-optimized models
     web_research_agent = get_web_agent(model_id="deepseek-chat", debug_mode=debug_mode)
     research_analyst = get_research_analyst_agent(model_id="deepseek-chat", debug_mode=debug_mode)
     fact_checker = get_fact_checker_agent(model_id="gpt-4o-mini", debug_mode=debug_mode)
-    
+
     # Create a secondary web agent for additional research capacity
     secondary_web_agent = get_web_agent(model_id="glm-4.5-air", debug_mode=debug_mode)
     secondary_web_agent.id = "secondary-web-research-agent"
     secondary_web_agent.name = "Secondary Web Research Agent"
-    
+
     return Team(
         id="comprehensive-research-team",
         name="Comprehensive Research Team",
         members=[
-            web_research_agent,      # Primary web research with advanced prompts
-            research_analyst,        # Academic analysis and methodology
-            fact_checker,           # Verification and accuracy checking
-            secondary_web_agent,    # Additional research capacity
+            web_research_agent,  # Primary web research with advanced prompts
+            research_analyst,  # Academic analysis and methodology
+            fact_checker,  # Verification and accuracy checking
+            secondary_web_agent,  # Additional research capacity
         ],
         # Comprehensive team instructions for coordination
         instructions=dedent("""\

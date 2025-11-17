@@ -3,14 +3,16 @@ Content writing and planning custom step functions for workflows
 """
 
 from textwrap import dedent
+
 from agno.workflow.types import StepInput, StepOutput
+
 from ...agents.content_writer import get_content_writer_agent
 
 
 def content_planner_function(step_input: StepInput) -> StepOutput:
     """
     Create comprehensive content plan based on research and competitive analysis
-    
+
     Features:
     - Detailed content structure and outline planning
     - SEO-optimized heading and keyword integration
@@ -20,13 +22,13 @@ def content_planner_function(step_input: StepInput) -> StepOutput:
     topic = step_input.input
     research_data = step_input.previous_step_content
     additional_data = step_input.additional_data or {}
-    
+
     # Extract planning parameters
     target_audience = additional_data.get("target_audience", "professionals")
     content_length = additional_data.get("target_length", "2000-3000 words")
     content_style = additional_data.get("writing_style", "professional")
     seo_focus = additional_data.get("seo_priority", "balanced")
-    
+
     planning_prompt = f"""
     COMPREHENSIVE CONTENT PLANNING & STRUCTURE DESIGN
 
@@ -98,11 +100,11 @@ def content_planner_function(step_input: StepInput) -> StepOutput:
 
     Provide a comprehensive plan that enables high-quality content creation.
     """
-    
+
     try:
         content_writer = get_content_writer_agent()
         response = content_writer.run(planning_prompt)
-        
+
         content_plan = f"""
         ## Comprehensive Content Plan Ready 📝
 
@@ -126,17 +128,17 @@ def content_planner_function(step_input: StepInput) -> StepOutput:
         **Implementation Status**: ✅ Ready for content writing execution
         **Quality Level**: Professional publication standard
         """.strip()
-        
+
         return StepOutput(
             content=content_plan,
             metadata={
                 "content_plan_completed": True,
                 "target_audience": target_audience,
                 "content_length": content_length,
-                "seo_optimized": True
-            }
+                "seo_optimized": True,
+            },
         )
-        
+
     except Exception as e:
         return StepOutput(
             content=f"Content planning failed: {str(e)}",
@@ -147,7 +149,7 @@ def content_planner_function(step_input: StepInput) -> StepOutput:
 def blog_writer_function(step_input: StepInput) -> StepOutput:
     """
     Execute comprehensive blog writing based on research and content plan
-    
+
     Features:
     - Full blog post creation with professional quality
     - Research integration and source citation
@@ -157,13 +159,13 @@ def blog_writer_function(step_input: StepInput) -> StepOutput:
     topic = step_input.input
     content_plan = step_input.previous_step_content
     additional_data = step_input.additional_data or {}
-    
+
     # Extract writing parameters
     brand_voice = additional_data.get("brand_voice", "professional")
     include_citations = additional_data.get("citations", True)
     cta_type = additional_data.get("cta_type", "engagement")
     publishing_platform = additional_data.get("platform", "blog")
-    
+
     writing_prompt = f"""
     PROFESSIONAL BLOG POST CREATION
 
@@ -195,7 +197,7 @@ def blog_writer_function(step_input: StepInput) -> StepOutput:
     3. **Research & Credibility Integration**:
        - Seamlessly integrate research findings and data
        - Include specific statistics, quotes, and examples
-       - Provide proper attribution {'and citations' if include_citations else ''}
+       - Provide proper attribution {"and citations" if include_citations else ""}
        - Establish expertise and authority throughout content
        - Balance multiple perspectives and viewpoints
 
@@ -222,11 +224,11 @@ def blog_writer_function(step_input: StepInput) -> StepOutput:
 
     Deliver a complete, publication-ready blog post that meets professional standards.
     """
-    
+
     try:
         content_writer = get_content_writer_agent()
         response = content_writer.run(writing_prompt)
-        
+
         blog_post = f"""
         ## Professional Blog Post Complete 📰
 
@@ -235,7 +237,7 @@ def blog_writer_function(step_input: StepInput) -> StepOutput:
         - Brand Voice: {brand_voice}
         - Platform: {publishing_platform}
         - CTA Focus: {cta_type}
-        - Citations: {'Included' if include_citations else 'References only'}
+        - Citations: {"Included" if include_citations else "References only"}
 
         **Publication-Ready Blog Post**:
         {response.content}
@@ -249,17 +251,17 @@ def blog_writer_function(step_input: StepInput) -> StepOutput:
 
         **Status**: ✅ Ready for optimization and final review
         """.strip()
-        
+
         return StepOutput(
             content=blog_post,
             metadata={
                 "blog_completed": True,
                 "word_count": "comprehensive",
                 "quality_level": "professional",
-                "seo_ready": True
-            }
+                "seo_ready": True,
+            },
         )
-        
+
     except Exception as e:
         return StepOutput(
             content=f"Blog writing failed: {str(e)}",
@@ -270,7 +272,7 @@ def blog_writer_function(step_input: StepInput) -> StepOutput:
 def content_enhancer_function(step_input: StepInput) -> StepOutput:
     """
     Enhance and polish content based on optimization feedback and quality review
-    
+
     Features:
     - Content refinement and editing improvements
     - SEO and fact-check integration
@@ -280,13 +282,13 @@ def content_enhancer_function(step_input: StepInput) -> StepOutput:
     topic = step_input.input
     blog_content = step_input.previous_step_content
     additional_data = step_input.additional_data or {}
-    
+
     # Extract enhancement parameters
     optimization_feedback = additional_data.get("seo_feedback", "No SEO feedback")
     fact_check_results = additional_data.get("fact_check", "No fact-check results")
     enhancement_focus = additional_data.get("enhancement", "overall_quality")
     final_review = additional_data.get("final_review", True)
-    
+
     enhancement_prompt = f"""
     CONTENT ENHANCEMENT & FINAL POLISH
 
@@ -342,11 +344,11 @@ def content_enhancer_function(step_input: StepInput) -> StepOutput:
 
     Deliver the final, enhanced, publication-ready blog post.
     """
-    
+
     try:
         content_writer = get_content_writer_agent()
         response = content_writer.run(enhancement_prompt)
-        
+
         enhanced_content = f"""
         ## Final Enhanced Blog Post Ready for Publication 🚀
 
@@ -373,17 +375,17 @@ def content_enhancer_function(step_input: StepInput) -> StepOutput:
 
         **Status**: ✅ APPROVED FOR PUBLICATION
         """.strip()
-        
+
         return StepOutput(
             content=enhanced_content,
             metadata={
                 "enhancement_completed": True,
                 "publication_ready": True,
                 "quality_level": "professional",
-                "final_approval": True
-            }
+                "final_approval": True,
+            },
         )
-        
+
     except Exception as e:
         return StepOutput(
             content=f"Content enhancement failed: {str(e)}",

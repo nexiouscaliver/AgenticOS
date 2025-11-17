@@ -3,10 +3,10 @@ Fact Checker Agent - Rigorous verification and accuracy validation specialist
 """
 
 from textwrap import dedent
+
 from agno.agent import Agent
 from agno.db.postgres import PostgresDb
 from agno.tools.duckduckgo import DuckDuckGoTools
-
 from db.session import db_url
 
 
@@ -16,7 +16,7 @@ def get_fact_checker_agent(
 ) -> Agent:
     """
     Fact Checker Agent with rigorous verification capabilities
-    
+
     Specialized in:
     - Multi-source fact verification and cross-referencing
     - Statistical accuracy and data validation
@@ -25,14 +25,11 @@ def get_fact_checker_agent(
     - Misinformation identification and correction
     """
     from models.factory import ModelFactory, TaskType
-    
+
     # Get optimal model for analytical verification tasks
-    model = ModelFactory.get_optimal_model(
-        task_type=TaskType.ANALYSIS,
-        priority="balanced"
-    )
+    model = ModelFactory.get_optimal_model(task_type=TaskType.ANALYSIS, priority="balanced")
     model_instance = ModelFactory.create_model(model)
-    
+
     return Agent(
         id="fact-checker-agent",
         name="Fact Checker",

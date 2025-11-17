@@ -3,9 +3,11 @@ SEO and quality optimization custom step functions for workflows
 """
 
 from textwrap import dedent
+
 from agno.workflow.types import StepInput, StepOutput
-from ...agents.seo_optimizer import get_seo_optimizer_agent
+
 from ...agents.fact_checker import get_fact_checker_agent
+from ...agents.seo_optimizer import get_seo_optimizer_agent
 
 
 def seo_analyzer_function(step_input: StepInput) -> StepOutput:
@@ -15,10 +17,10 @@ def seo_analyzer_function(step_input: StepInput) -> StepOutput:
     topic = step_input.input
     content = step_input.previous_step_content
     additional_data = step_input.additional_data or {}
-    
+
     seo_focus = additional_data.get("seo_priority", "balanced")
     target_keywords = additional_data.get("keywords", [])
-    
+
     seo_prompt = f"""
     COMPREHENSIVE SEO ANALYSIS & OPTIMIZATION
 
@@ -54,14 +56,14 @@ def seo_analyzer_function(step_input: StepInput) -> StepOutput:
 
     Provide actionable SEO improvements for better search performance.
     """
-    
+
     try:
         seo_optimizer = get_seo_optimizer_agent()
         response = seo_optimizer.run(seo_prompt)
-        
+
         return StepOutput(
             content=f"## SEO Analysis Complete\n\n{response.content}",
-            metadata={"seo_analyzed": True, "recommendations_provided": True}
+            metadata={"seo_analyzed": True, "recommendations_provided": True},
         )
     except Exception as e:
         return StepOutput(content=f"SEO analysis failed: {str(e)}", success=False)
@@ -74,9 +76,9 @@ def fact_verifier_function(step_input: StepInput) -> StepOutput:
     topic = step_input.input
     content = step_input.previous_step_content
     additional_data = step_input.additional_data or {}
-    
+
     verification_level = additional_data.get("verification_level", "comprehensive")
-    
+
     fact_check_prompt = f"""
     COMPREHENSIVE FACT VERIFICATION
 
@@ -96,14 +98,14 @@ def fact_verifier_function(step_input: StepInput) -> StepOutput:
 
     Provide verification results with confidence scores.
     """
-    
+
     try:
         fact_checker = get_fact_checker_agent()
         response = fact_checker.run(fact_check_prompt)
-        
+
         return StepOutput(
             content=f"## Fact Verification Complete\n\n{response.content}",
-            metadata={"fact_checked": True, "verification_completed": True}
+            metadata={"fact_checked": True, "verification_completed": True},
         )
     except Exception as e:
         return StepOutput(content=f"Fact checking failed: {str(e)}", success=False)
@@ -116,9 +118,9 @@ def quality_assessor_function(step_input: StepInput) -> StepOutput:
     topic = step_input.input
     content = step_input.previous_step_content
     additional_data = step_input.additional_data or {}
-    
+
     quality_standards = additional_data.get("quality_level", "professional")
-    
+
     quality_prompt = f"""
     COMPREHENSIVE QUALITY ASSESSMENT
 
@@ -144,16 +146,17 @@ def quality_assessor_function(step_input: StepInput) -> StepOutput:
 
     Rate overall quality and provide specific improvement suggestions.
     """
-    
+
     try:
         # Use content writer for quality assessment
         from ...agents.content_writer import get_content_writer_agent
+
         quality_assessor = get_content_writer_agent()
         response = quality_assessor.run(quality_prompt)
-        
+
         return StepOutput(
             content=f"## Quality Assessment Complete\n\n{response.content}",
-            metadata={"quality_assessed": True, "improvement_suggestions": True}
+            metadata={"quality_assessed": True, "improvement_suggestions": True},
         )
     except Exception as e:
         return StepOutput(content=f"Quality assessment failed: {str(e)}", success=False)

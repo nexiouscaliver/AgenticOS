@@ -1,10 +1,9 @@
 from typing import Generator
 
+from db.url import get_db_url
+from dotenv import load_dotenv
 from sqlalchemy.engine import Engine, create_engine
 from sqlalchemy.orm import Session, sessionmaker
-
-from dotenv import load_dotenv
-from db.url import get_db_url
 
 load_dotenv()
 

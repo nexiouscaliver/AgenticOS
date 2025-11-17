@@ -3,10 +3,10 @@ SEO Optimizer Agent - Search engine optimization and content performance special
 """
 
 from textwrap import dedent
+
 from agno.agent import Agent
 from agno.db.postgres import PostgresDb
 from agno.tools.duckduckgo import DuckDuckGoTools
-
 from db.session import db_url
 
 
@@ -16,7 +16,7 @@ def get_seo_optimizer_agent(
 ) -> Agent:
     """
     SEO Optimizer Agent specialized in search engine optimization
-    
+
     Expertise:
     - Technical SEO analysis and optimization
     - Keyword research and content optimization
@@ -25,14 +25,11 @@ def get_seo_optimizer_agent(
     - Performance monitoring and improvement strategies
     """
     from models.factory import ModelFactory, TaskType
-    
+
     # Get optimal model for analysis and optimization tasks
-    model = ModelFactory.get_optimal_model(
-        task_type=TaskType.ANALYSIS,
-        priority="balanced"
-    )
+    model = ModelFactory.get_optimal_model(task_type=TaskType.ANALYSIS, priority="balanced")
     model_instance = ModelFactory.create_model(model)
-    
+
     return Agent(
         id="seo-optimizer-agent",
         name="SEO Optimizer",

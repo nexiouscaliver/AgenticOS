@@ -2,18 +2,17 @@
 GLM4.5 Provider implementation compatible with Agno's OpenAI-like interface.
 """
 
+import logging
 import os
 import time
-import logging
-from typing import Any, Dict, Iterator, List, Optional, Union, Type
 from dataclasses import dataclass, field
 from enum import Enum
+from typing import Any, Dict, Iterator, List, Optional, Type, Union
 
-from agno.models.openai.like import OpenAILike
 from agno.models.message import Message
+from agno.models.openai.like import OpenAILike
 from agno.models.response import ModelResponse
 from pydantic import BaseModel
-
 
 logging.basicConfig(level=logging.INFO)
 glm_logger = logging.getLogger(__name__)
@@ -35,23 +34,46 @@ class GLM45Config:
     enable_search: bool = True
     arabic_optimization: bool = True
     response_format: Optional[Dict] = None
-    safety_settings: Dict = field(default_factory=lambda: {
-        "harassment": "BLOCK_MEDIUM_AND_ABOVE",
-        "hate_speech": "BLOCK_MEDIUM_AND_ABOVE",
-        "dangerous_content": "BLOCK_MEDIUM_AND_ABOVE"
-    })
+    safety_settings: Dict = field(
+        default_factory=lambda: {
+            "harassment": "BLOCK_MEDIUM_AND_ABOVE",
+            "hate_speech": "BLOCK_MEDIUM_AND_ABOVE",
+            "dangerous_content": "BLOCK_MEDIUM_AND_ABOVE",
+        }
+    )
 
 
 class QueryComplexityAnalyzer:
     def __init__(self):
         self.complex_indicators = [
-            'analyze', 'compare', 'evaluate', 'explain why', 'how does',
-            'what if', 'design', 'optimize', 'debug', 'solve',
-            'تحليل', 'مقارنة', 'تقييم', 'شرح', 'كيف'
+            "analyze",
+            "compare",
+            "evaluate",
+            "explain why",
+            "how does",
+            "what if",
+            "design",
+            "optimize",
+            "debug",
+            "solve",
+            "تحليل",
+            "مقارنة",
+            "تقييم",
+            "شرح",
+            "كيف",
         ]
         self.simple_indicators = [
-            'what is', 'define', 'list', 'name', 'when', 'where',
-            'ما هو', 'عرف', 'اذكر', 'متى', 'أين'
+            "what is",
+            "define",
+            "list",
+            "name",
+            "when",
+            "where",
+            "ما هو",
+            "عرف",
+            "اذكر",
+            "متى",
+            "أين",
         ]
 
     def analyze(self, query: str) -> str:
@@ -59,15 +81,15 @@ class QueryComplexityAnalyzer:
         complex_score = sum(1 for indicator in self.complex_indicators if indicator in query_lower)
         simple_score = sum(1 for indicator in self.simple_indicators if indicator in query_lower)
         word_count = len(query.split())
-        has_multiple_questions = query.count('?') > 1 or query.count('؟') > 1
+        has_multiple_questions = query.count("?") > 1 or query.count("؟") > 1
         if complex_score >= 2 or (complex_score >= 1 and word_count > 50):
-            return 'very_complex'
+            return "very_complex"
         elif complex_score >= 1 or has_multiple_questions:
-            return 'complex'
+            return "complex"
         elif simple_score >= 1 and word_count < 20:
-            return 'simple'
+            return "simple"
         else:
-            return 'moderate'
+            return "moderate"
 
 
 class GLM45Provider(OpenAILike):
@@ -86,7 +108,7 @@ class GLM45Provider(OpenAILike):
         presence_penalty: float = 0.0,
         stop: Optional[List[str]] = None,
         stream: bool = True,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(
             id=id,
@@ -98,7 +120,7 @@ class GLM45Provider(OpenAILike):
             frequency_penalty=frequency_penalty,
             presence_penalty=presence_penalty,
             stop=stop or ["<|endoftext|>", "<|endofthinking|>"],
-            **kwargs
+            **kwargs,
         )
 
         self.mode = mode
@@ -130,34 +152,33 @@ class GLM45Provider(OpenAILike):
             last_message = messages[-1] if messages else None
             if last_message:
                 complexity = self._query_analyzer.analyze(last_message.content)
-                return complexity in ['complex', 'very_complex']
+                return complexity in ["complex", "very_complex"]
             return False
 
     def _prepare_messages(self, messages: List[Message]) -> List[Dict[str, Any]]:
         formatted_messages = []
         for msg in messages:
             content = msg.content
-            formatted_msg = {
-                "role": msg.role,
-                "content": content
-            }
-            if hasattr(msg, 'function_call') and msg.function_call:
+            formatted_msg = {"role": msg.role, "content": content}
+            if hasattr(msg, "function_call") and msg.function_call:
                 formatted_msg["function_call"] = msg.function_call
             formatted_messages.append(formatted_msg)
         return formatted_messages
 
     def _preprocess_arabic(self, text: str) -> str:
         import re
-        text = re.sub(r'[\u064B-\u0652\u0670\u0640]', '', text)
-        text = re.sub(r'[إأٱآا]', 'ا', text)
-        text = re.sub(r'[ىئ]', 'ي', text)
-        text = re.sub(r'ـ', '', text)
-        text = re.sub(r'\s+', ' ', text).strip()
+
+        text = re.sub(r"[\u064B-\u0652\u0670\u0640]", "", text)
+        text = re.sub(r"[إأٱآا]", "ا", text)
+        text = re.sub(r"[ىئ]", "ي", text)
+        text = re.sub(r"ـ", "", text)
+        text = re.sub(r"\s+", " ", text).strip()
         return text
 
     def _contains_arabic(self, text: str) -> bool:
         import re
-        arabic_pattern = re.compile(r'[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]+')
+
+        arabic_pattern = re.compile(r"[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]+")
         return bool(arabic_pattern.search(text))
 
     def get_request_params(
@@ -166,9 +187,7 @@ class GLM45Provider(OpenAILike):
         tools: Optional[List[Dict[str, Any]]] = None,
         tool_choice: Optional[Union[str, Dict[str, Any]]] = None,
     ) -> Dict[str, Any]:
-        params = super().get_request_params(
-            response_format=response_format, tools=tools, tool_choice=tool_choice
-        )
+        params = super().get_request_params(response_format=response_format, tools=tools, tool_choice=tool_choice)
         if self._use_thinking_for_next_request is None:
             use_thinking = True if self.mode == GLM45Mode.THINKING else False
         else:
@@ -244,8 +263,14 @@ class GLM45Provider(OpenAILike):
         if message is None:
             return None
         field_names = [
-            "reasoning_content", "thinking_content", "thinking", "thought",
-            "reasoning", "internal_thought", "rationale", "analysis"
+            "reasoning_content",
+            "thinking_content",
+            "thinking",
+            "thought",
+            "reasoning",
+            "internal_thought",
+            "rationale",
+            "analysis",
         ]
         try:
             for name in field_names:
@@ -264,10 +289,11 @@ class GLM45Provider(OpenAILike):
             content = message.get("content")
         else:
             content = getattr(message, "content", None)
-        if isinstance(content, str) and '<thinking>' in content and '</thinking>' in content:
+        if isinstance(content, str) and "<thinking>" in content and "</thinking>" in content:
             try:
                 import re
-                match = re.search(r'<thinking>([\s\S]*?)</thinking>', content)
+
+                match = re.search(r"<thinking>([\s\S]*?)</thinking>", content)
                 if match:
                     return match.group(1).strip()
             except Exception:
@@ -307,10 +333,9 @@ class GLM45Provider(OpenAILike):
                     usage = response.usage
                     thinking_tokens = 0
                     if isinstance(usage, dict):
-                        thinking_tokens = (
-                            usage.get("completion_tokens_details", {}).get("reasoning_tokens", 0)
-                            or usage.get("thinking_tokens", 0)
-                        )
+                        thinking_tokens = usage.get("completion_tokens_details", {}).get(
+                            "reasoning_tokens", 0
+                        ) or usage.get("thinking_tokens", 0)
                     else:
                         ctd = getattr(usage, "completion_tokens_details", None)
                         if isinstance(ctd, dict):
@@ -321,7 +346,7 @@ class GLM45Provider(OpenAILike):
                             thinking_tokens = getattr(usage, "reasoning_tokens", 0) or 0
                     if isinstance(thinking_tokens, (int, float)):
                         self.thinking_tokens_used += int(thinking_tokens)
-                        self.total_thinking_time += (time.time() - start_time)
+                        self.total_thinking_time += time.time() - start_time
                 except Exception:
                     pass
             return response
@@ -331,11 +356,7 @@ class GLM45Provider(OpenAILike):
         finally:
             self._use_thinking_for_next_request = None
 
-    def invoke_stream(
-        self,
-        messages: List[Message],
-        **kwargs
-    ) -> Iterator[Union[str, ModelResponse]]:
+    def invoke_stream(self, messages: List[Message], **kwargs) -> Iterator[Union[str, ModelResponse]]:
         if self.config.arabic_optimization:
             for msg in messages:
                 if isinstance(msg.content, str) and self._contains_arabic(msg.content):
@@ -359,33 +380,33 @@ class GLM45Provider(OpenAILike):
                         yield original_chunk
                         continue
                     text = chunk_text
-                    if '<|thinking|>' in text:
+                    if "<|thinking|>" in text:
                         in_thinking_block = True
-                        text = text.split('<|thinking|>', 1)[0]
+                        text = text.split("<|thinking|>", 1)[0]
                     if in_thinking_block:
-                        if '<|endofthinking|>' in text:
-                            after_end = text.split('<|endofthinking|>', 1)[1]
+                        if "<|endofthinking|>" in text:
+                            after_end = text.split("<|endofthinking|>", 1)[1]
                             in_thinking_block = False
                             text = after_end
                         else:
                             continue
                     while True:
                         if in_tag_thinking_block:
-                            if '</thinking>' in text:
-                                text = text.split('</thinking>', 1)[1]
+                            if "</thinking>" in text:
+                                text = text.split("</thinking>", 1)[1]
                                 in_tag_thinking_block = False
                                 continue
                             else:
-                                text = ''
+                                text = ""
                                 break
                         else:
-                            if '<thinking>' in text and '</thinking>' in text:
-                                pre, rest = text.split('<thinking>', 1)
-                                _, post = rest.split('</thinking>', 1)
+                            if "<thinking>" in text and "</thinking>" in text:
+                                pre, rest = text.split("<thinking>", 1)
+                                _, post = rest.split("</thinking>", 1)
                                 text = pre + post
                                 continue
-                            elif '<thinking>' in text:
-                                text = text.split('<thinking>', 1)[0]
+                            elif "<thinking>" in text:
+                                text = text.split("<thinking>", 1)[0]
                                 in_tag_thinking_block = True
                                 break
                             else:
@@ -398,12 +419,12 @@ class GLM45Provider(OpenAILike):
                             yield ModelResponse(content=text)
                     continue
                 text = chunk_text
-                if '<|thinking|>' in text:
+                if "<|thinking|>" in text:
                     in_thinking_block = True
-                    text = text.split('<|thinking|>', 1)[1]
+                    text = text.split("<|thinking|>", 1)[1]
                 if in_thinking_block:
-                    if '<|endofthinking|>' in text:
-                        before_end, after_end = text.split('<|endofthinking|>', 1)
+                    if "<|endofthinking|>" in text:
+                        before_end, after_end = text.split("<|endofthinking|>", 1)
                         thinking_content.append(before_end)
                         wrapped = f"<thinking>\n{''.join(thinking_content)}\n</thinking>\n\n"
                         thinking_content.clear()
@@ -433,6 +454,7 @@ class GLM45Provider(OpenAILike):
     def _extract_and_wrap_thinking_from_text(self, text: str) -> Optional[str]:
         try:
             import re
+
             pattern = re.compile(r"<\|thinking\|>([\s\S]*?)<\|endofthinking\|>")
             match = pattern.search(text)
             if not match:
@@ -446,6 +468,7 @@ class GLM45Provider(OpenAILike):
     def _strip_thinking_from_text(self, text: str) -> Optional[str]:
         try:
             import re
+
             original = text
             text = re.sub(r"<\|thinking\|>[\s\S]*?<\|endofthinking\|>", "", text)
             text = re.sub(r"<thinking>[\s\S]*?</thinking>", "", text)
@@ -464,15 +487,12 @@ class GLM45Provider(OpenAILike):
             "thinking_tokens_used": self.thinking_tokens_used,
             "total_thinking_time": self.total_thinking_time,
             "average_thinking_time": (
-                self.total_thinking_time / max(1, self.thinking_tokens_used)
-                if self.thinking_tokens_used > 0 else 0
+                self.total_thinking_time / max(1, self.thinking_tokens_used) if self.thinking_tokens_used > 0 else 0
             ),
             "arabic_optimization": self.config.arabic_optimization,
-            "reasoning_effort": self.config.reasoning_effort
+            "reasoning_effort": self.config.reasoning_effort,
         }
 
     def reset_metrics(self):
         self.thinking_tokens_used = 0
         self.total_thinking_time = 0.0
-
-

@@ -3,13 +3,13 @@ Research Analyst Agent - Deep investigative research with academic rigor
 """
 
 from textwrap import dedent
+
 from agno.agent import Agent
 from agno.db.postgres import PostgresDb
-from agno.tools.duckduckgo import DuckDuckGoTools
 from agno.knowledge import Knowledge
 from agno.knowledge.embedder.openai import OpenAIEmbedder
+from agno.tools.duckduckgo import DuckDuckGoTools
 from agno.vectordb.pgvector import PgVector, SearchType
-
 from db.session import db_url
 
 
@@ -19,7 +19,7 @@ def get_research_analyst_agent(
 ) -> Agent:
     """
     Research Analyst Agent with deep investigative capabilities
-    
+
     Specialized in:
     - Academic-quality research methodology
     - Multi-source verification and cross-referencing
@@ -28,14 +28,14 @@ def get_research_analyst_agent(
     - Comprehensive source evaluation and citation
     """
     from models.factory import ModelFactory, TaskType
-    
+
     # Get optimal model for research tasks with cost optimization
     model = ModelFactory.get_optimal_model(
         task_type=TaskType.RESEARCH,
-        priority="budget"  # Cost-optimized for research volume
+        priority="budget",  # Cost-optimized for research volume
     )
     model_instance = ModelFactory.create_model(model)
-    
+
     return Agent(
         id="research-analyst-agent",
         name="Research Analyst",

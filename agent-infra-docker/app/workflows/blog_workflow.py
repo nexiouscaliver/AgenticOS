@@ -3,21 +3,21 @@ Blog Writing Workflow - Comprehensive blog creation with research team and optim
 """
 
 from textwrap import dedent
-from agno.workflow import Workflow, Step, Parallel, Condition
-from agno.workflow.types import StepInput, StepOutput
-from agno.db.postgres import PostgresDb
 
-from teams.research_team import get_research_team
 from agents.content_writer import get_content_writer_agent
-from agents.seo_optimizer import get_seo_optimizer_agent
 from agents.fact_checker import get_fact_checker_agent
+from agents.seo_optimizer import get_seo_optimizer_agent
+from agno.db.postgres import PostgresDb
+from agno.workflow import Condition, Parallel, Step, Workflow
+from agno.workflow.types import StepInput, StepOutput
 from db.session import db_url
+from teams.research_team import get_research_team
 
 
 def get_blog_writing_workflow(debug_mode: bool = False) -> Workflow:
     """
     Comprehensive Blog Writing Workflow
-    
+
     Process Flow:
     1. Topic Analysis & Planning
     2. Parallel Research (Research Team + Competitive Analysis)
@@ -25,7 +25,7 @@ def get_blog_writing_workflow(debug_mode: bool = False) -> Workflow:
     4. Blog Writing
     5. Parallel Enhancement (SEO + Fact-checking)
     6. Final Review & Polish
-    
+
     Features:
     - Multi-agent research team for comprehensive information gathering
     - Parallel execution for efficiency
@@ -33,20 +33,20 @@ def get_blog_writing_workflow(debug_mode: bool = False) -> Workflow:
     - SEO optimization and fact-checking integration
     - Professional blog creation with citations and optimization
     """
-    
+
     # Initialize agents
     research_team = get_research_team(debug_mode=debug_mode)
     content_writer = get_content_writer_agent(debug_mode=debug_mode)
     seo_optimizer = get_seo_optimizer_agent(debug_mode=debug_mode)
     fact_checker = get_fact_checker_agent(debug_mode=debug_mode)
-    
+
     # Custom step functions for workflow optimization
     def topic_analysis_function(step_input: StepInput) -> StepOutput:
         """
         Analyze blog topic and create research strategy
         """
         topic = step_input.input
-        
+
         analysis_prompt = f"""
         BLOG TOPIC ANALYSIS & RESEARCH STRATEGY
 
@@ -62,11 +62,11 @@ def get_blog_writing_workflow(debug_mode: bool = False) -> Workflow:
 
         Format as structured analysis for the research team.
         """
-        
+
         try:
             # Use research team for initial analysis
             response = research_team.run(analysis_prompt)
-            
+
             return StepOutput(
                 content=f"""
                 ## Topic Analysis Complete
@@ -84,14 +84,14 @@ def get_blog_writing_workflow(debug_mode: bool = False) -> Workflow:
                 content=f"Topic analysis failed: {str(e)}",
                 success=False,
             )
-    
+
     def content_planning_function(step_input: StepInput) -> StepOutput:
         """
         Create detailed content plan based on research findings
         """
         topic = step_input.input
         research_content = step_input.previous_step_content
-        
+
         planning_prompt = f"""
         COMPREHENSIVE CONTENT PLANNING
 
@@ -111,10 +111,10 @@ def get_blog_writing_workflow(debug_mode: bool = False) -> Workflow:
 
         Focus on creating a comprehensive plan that the content writer can execute.
         """
-        
+
         try:
             response = content_writer.run(planning_prompt)
-            
+
             return StepOutput(
                 content=f"""
                 ## Content Plan Ready
@@ -133,14 +133,14 @@ def get_blog_writing_workflow(debug_mode: bool = False) -> Workflow:
                 content=f"Content planning failed: {str(e)}",
                 success=False,
             )
-    
+
     def seo_fact_check_integration_function(step_input: StepInput) -> StepOutput:
         """
         Integrate SEO optimization and fact-checking results
         """
         topic = step_input.input
         blog_content = step_input.previous_step_content
-        
+
         integration_prompt = f"""
         BLOG POST INTEGRATION & FINAL OPTIMIZATION
 
@@ -158,10 +158,10 @@ def get_blog_writing_workflow(debug_mode: bool = False) -> Workflow:
 
         Deliver the final, publication-ready blog post.
         """
-        
+
         try:
             response = content_writer.run(integration_prompt)
-            
+
             return StepOutput(
                 content=f"""
                 ## Final Blog Post Ready
@@ -183,77 +183,74 @@ def get_blog_writing_workflow(debug_mode: bool = False) -> Workflow:
                 content=f"Final integration failed: {str(e)}",
                 success=False,
             )
-    
+
     # Condition evaluator for content quality
     def needs_additional_research(step_input: StepInput) -> bool:
         """
         Determine if additional research is needed based on content depth
         """
         content = step_input.previous_step_content or ""
-        
+
         # Simple heuristic: check for research indicators
-        research_indicators = [
-            "research", "study", "data", "statistics", 
-            "according to", "expert", "survey", "report"
-        ]
-        
+        research_indicators = ["research", "study", "data", "statistics", "according to", "expert", "survey", "report"]
+
         indicator_count = sum(1 for indicator in research_indicators if indicator.lower() in content.lower())
         content_length = len(content)
-        
+
         # Need more research if content is short or lacks research depth
         return content_length < 1000 or indicator_count < 3
-    
+
     # Define workflow steps
     topic_analysis_step = Step(
         name="Topic Analysis",
         executor=topic_analysis_function,
         description="Analyze blog topic and create research strategy",
     )
-    
+
     research_step = Step(
-        name="Research Execution", 
+        name="Research Execution",
         team=research_team,
         description="Comprehensive research by specialized team",
     )
-    
+
     content_planning_step = Step(
         name="Content Planning",
         executor=content_planning_function,
         description="Create detailed content plan based on research",
     )
-    
+
     blog_writing_step = Step(
         name="Blog Writing",
         agent=content_writer,
         description="Write comprehensive blog post based on plan",
     )
-    
+
     # Parallel optimization steps
     seo_optimization_step = Step(
         name="SEO Optimization",
         agent=seo_optimizer,
         description="Optimize blog content for search engines",
     )
-    
+
     fact_checking_step = Step(
         name="Fact Checking",
         agent=fact_checker,
         description="Verify accuracy and credibility of content",
     )
-    
+
     final_integration_step = Step(
         name="Final Integration",
         executor=seo_fact_check_integration_function,
         description="Integrate optimization and fact-check results",
     )
-    
+
     # Additional research step for conditional execution
     additional_research_step = Step(
         name="Additional Research",
         team=research_team,
         description="Supplementary research for content enhancement",
     )
-    
+
     return Workflow(
         id="comprehensive-blog-workflow",
         name="Comprehensive Blog Writing Workflow",
@@ -265,16 +262,12 @@ def get_blog_writing_workflow(debug_mode: bool = False) -> Workflow:
         steps=[
             # Phase 1: Analysis and Planning
             topic_analysis_step,
-            
             # Phase 2: Research Execution
             research_step,
-            
             # Phase 3: Content Planning
             content_planning_step,
-            
             # Phase 4: Content Creation
             blog_writing_step,
-            
             # Phase 5: Conditional Additional Research
             Condition(
                 name="Additional Research Check",
@@ -282,7 +275,6 @@ def get_blog_writing_workflow(debug_mode: bool = False) -> Workflow:
                 evaluator=needs_additional_research,
                 steps=[additional_research_step],
             ),
-            
             # Phase 6: Parallel Enhancement
             Parallel(
                 seo_optimization_step,
@@ -290,7 +282,6 @@ def get_blog_writing_workflow(debug_mode: bool = False) -> Workflow:
                 name="Content Enhancement",
                 description="Parallel SEO optimization and fact-checking",
             ),
-            
             # Phase 7: Final Integration
             final_integration_step,
         ],
@@ -300,45 +291,45 @@ def get_blog_writing_workflow(debug_mode: bool = False) -> Workflow:
 def get_simple_blog_workflow(debug_mode: bool = False) -> Workflow:
     """
     Simplified blog workflow for basic content creation
-    
+
     Process Flow:
     1. Research (Research Team)
     2. Write (Content Writer)
     3. Optimize (SEO Optimizer)
-    
+
     For users who want a faster, more basic blog creation process.
     """
-    
+
     # Initialize agents
     research_team = get_research_team(debug_mode=debug_mode)
     content_writer = get_content_writer_agent(debug_mode=debug_mode)
     seo_optimizer = get_seo_optimizer_agent(debug_mode=debug_mode)
-    
+
     # Define simple workflow steps
     simple_research_step = Step(
         name="Research",
         team=research_team,
         description="Research the blog topic comprehensively",
     )
-    
+
     simple_writing_step = Step(
         name="Writing",
         agent=content_writer,
         description="Write blog post based on research",
     )
-    
+
     simple_seo_step = Step(
         name="SEO Optimization",
         agent=seo_optimizer,
         description="Optimize blog for search engines",
     )
-    
+
     return Workflow(
         id="simple-blog-workflow",
         name="Simple Blog Writing Workflow",
         description="Streamlined blog creation workflow",
         db=PostgresDb(
-            id="simple-blog-workflow-storage", 
+            id="simple-blog-workflow-storage",
             db_url=db_url,
         ),
         steps=[

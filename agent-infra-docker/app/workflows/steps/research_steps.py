@@ -3,14 +3,16 @@ Research-focused custom step functions for workflows
 """
 
 from textwrap import dedent
+
 from agno.workflow.types import StepInput, StepOutput
+
 from ...teams.research_team import get_research_team
 
 
 def topic_analyzer_function(step_input: StepInput) -> StepOutput:
     """
     Analyze and break down complex topics for comprehensive research
-    
+
     Features:
     - Topic decomposition and scope definition
     - Research strategy planning
@@ -19,12 +21,12 @@ def topic_analyzer_function(step_input: StepInput) -> StepOutput:
     """
     topic = step_input.input
     additional_data = step_input.additional_data or {}
-    
+
     # Extract context from additional data
     target_audience = additional_data.get("target_audience", "general audience")
     content_type = additional_data.get("content_type", "blog post")
     industry_focus = additional_data.get("industry", "general")
-    
+
     analysis_prompt = f"""
     ADVANCED TOPIC ANALYSIS FOR {content_type.upper()}
 
@@ -67,12 +69,12 @@ def topic_analyzer_function(step_input: StepInput) -> StepOutput:
 
     Provide a structured analysis that guides comprehensive research execution.
     """
-    
+
     try:
         # Use research team for expert topic analysis
         research_team = get_research_team()
         response = research_team.run(analysis_prompt)
-        
+
         enhanced_analysis = f"""
         ## Topic Analysis Complete ✅
 
@@ -92,7 +94,7 @@ def topic_analyzer_function(step_input: StepInput) -> StepOutput:
 
         **Research Readiness**: ✅ Ready for comprehensive research execution
         """.strip()
-        
+
         return StepOutput(
             content=enhanced_analysis,
             metadata={
@@ -100,10 +102,10 @@ def topic_analyzer_function(step_input: StepInput) -> StepOutput:
                 "content_type": content_type,
                 "target_audience": target_audience,
                 "industry": industry_focus,
-                "analysis_completed": True
-            }
+                "analysis_completed": True,
+            },
         )
-        
+
     except Exception as e:
         return StepOutput(
             content=f"Topic analysis failed: {str(e)}",
@@ -114,7 +116,7 @@ def topic_analyzer_function(step_input: StepInput) -> StepOutput:
 def research_coordinator_function(step_input: StepInput) -> StepOutput:
     """
     Coordinate and optimize research execution across multiple agents
-    
+
     Features:
     - Research task distribution and prioritization
     - Quality control and verification protocols
@@ -124,12 +126,12 @@ def research_coordinator_function(step_input: StepInput) -> StepOutput:
     topic = step_input.input
     previous_analysis = step_input.previous_step_content
     additional_data = step_input.additional_data or {}
-    
+
     # Extract research parameters
     research_depth = additional_data.get("research_depth", "comprehensive")
     time_sensitivity = additional_data.get("time_sensitivity", "current")
     geographic_scope = additional_data.get("geographic_scope", "global")
-    
+
     coordination_prompt = f"""
     RESEARCH COORDINATION & EXECUTION STRATEGY
 
@@ -173,11 +175,11 @@ def research_coordinator_function(step_input: StepInput) -> StepOutput:
 
     Deliver comprehensive, verified, and actionable research results.
     """
-    
+
     try:
         research_team = get_research_team()
         response = research_team.run(coordination_prompt)
-        
+
         coordinated_research = f"""
         ## Coordinated Research Results 📊
 
@@ -200,17 +202,17 @@ def research_coordinator_function(step_input: StepInput) -> StepOutput:
         **Research Status**: ✅ Comprehensive investigation completed
         **Next Phase**: Ready for content planning and writing
         """.strip()
-        
+
         return StepOutput(
             content=coordinated_research,
             metadata={
                 "research_completed": True,
                 "research_depth": research_depth,
                 "source_count": "multiple_verified",
-                "quality_level": "comprehensive"
-            }
+                "quality_level": "comprehensive",
+            },
         )
-        
+
     except Exception as e:
         return StepOutput(
             content=f"Research coordination failed: {str(e)}",
@@ -221,7 +223,7 @@ def research_coordinator_function(step_input: StepInput) -> StepOutput:
 def competitive_analysis_function(step_input: StepInput) -> StepOutput:
     """
     Analyze competitive landscape and identify content differentiation opportunities
-    
+
     Features:
     - Competitor content analysis and gap identification
     - SERP analysis and ranking opportunity assessment
@@ -231,12 +233,12 @@ def competitive_analysis_function(step_input: StepInput) -> StepOutput:
     topic = step_input.input
     research_content = step_input.previous_step_content
     additional_data = step_input.additional_data or {}
-    
+
     # Extract competitive analysis parameters
     competitor_count = additional_data.get("competitor_analysis_depth", "top_10")
     content_format = additional_data.get("content_format", "blog_post")
     differentiation_focus = additional_data.get("differentiation", "expertise")
-    
+
     competitive_prompt = f"""
     COMPETITIVE LANDSCAPE ANALYSIS & DIFFERENTIATION STRATEGY
 
@@ -287,11 +289,11 @@ def competitive_analysis_function(step_input: StepInput) -> StepOutput:
 
     Deliver actionable insights for content differentiation and competitive advantage.
     """
-    
+
     try:
         research_team = get_research_team()
         response = research_team.run(competitive_prompt)
-        
+
         competitive_analysis = f"""
         ## Competitive Analysis & Differentiation Strategy 🎯
 
@@ -313,17 +315,17 @@ def competitive_analysis_function(step_input: StepInput) -> StepOutput:
         **Competitive Advantage Status**: ✅ Clear differentiation strategy developed
         **Implementation Readiness**: ✅ Ready for content creation with competitive edge
         """.strip()
-        
+
         return StepOutput(
             content=competitive_analysis,
             metadata={
                 "competitive_analysis_completed": True,
                 "differentiation_strategy": differentiation_focus,
                 "content_format": content_format,
-                "competitive_advantage": True
-            }
+                "competitive_advantage": True,
+            },
         )
-        
+
     except Exception as e:
         return StepOutput(
             content=f"Competitive analysis failed: {str(e)}",

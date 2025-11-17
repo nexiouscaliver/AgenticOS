@@ -4,11 +4,10 @@ from agno.agent import Agent
 from agno.db.postgres import PostgresDb
 from agno.knowledge import Knowledge
 from agno.knowledge.embedder.openai import OpenAIEmbedder
+from agno.models.google import Gemini
 from agno.models.openai import OpenAIChat
 from agno.tools.duckduckgo import DuckDuckGoTools
 from agno.vectordb.pgvector import PgVector, SearchType
-from agno.models.google import Gemini
-
 from db.session import db_url
 
 
@@ -24,14 +23,11 @@ def get_agno_assist(
     - Performance optimization recommendations
     """
     from models.factory import ModelFactory, TaskType
-    
+
     # Get optimal model for analysis and documentation tasks
-    model = ModelFactory.get_optimal_model(
-        task_type=TaskType.ANALYSIS,
-        priority="balanced"
-    )
+    model = ModelFactory.get_optimal_model(task_type=TaskType.ANALYSIS, priority="balanced")
     model_instance = ModelFactory.create_model(model)
-    
+
     return Agent(
         id="agno-documentation-expert",
         name="Agno Framework Expert",

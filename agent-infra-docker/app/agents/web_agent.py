@@ -2,10 +2,9 @@ from textwrap import dedent
 
 from agno.agent import Agent
 from agno.db.postgres import PostgresDb
-from agno.models.openai import OpenAIChat
 from agno.models.google import Gemini
+from agno.models.openai import OpenAIChat
 from agno.tools.duckduckgo import DuckDuckGoTools
-
 from db.session import db_url
 
 
@@ -21,14 +20,14 @@ def get_web_agent(
     - Citation tracking and source evaluation
     """
     from models.factory import ModelFactory, TaskType
-    
+
     # Get optimal model for research tasks
     model = ModelFactory.get_optimal_model(
         task_type=TaskType.RESEARCH,
-        priority="balanced"  # Balance cost and capability
+        priority="balanced",  # Balance cost and capability
     )
     model_instance = ModelFactory.create_model(model)
-    
+
     return Agent(
         id="advanced-web-research-agent",
         name="Advanced Web Research Agent",

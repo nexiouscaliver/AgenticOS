@@ -1,0 +1,72 @@
+{
+  "test_metadata": {
+    "name": "Multi-Format Parser Test",
+    "version": "1.0.0",
+    "created": "2025-11-17",
+    "purpose": "Testing JSON parsing capabilities"
+  },
+  "supported_formats": [
+    {
+      "extension": "pdf",
+      "name": "PDF Document",
+      "mime_type": "application/pdf",
+      "features": ["text_extraction", "metadata", "multi_page"]
+    },
+    {
+      "extension": "docx",
+      "name": "Microsoft Word",
+      "mime_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "features": ["paragraphs", "tables", "formatting"]
+    },
+    {
+      "extension": "csv",
+      "name": "CSV File",
+      "mime_type": "text/csv",
+      "features": ["tabular_data", "statistics", "preview"]
+    },
+    {
+      "extension": "xlsx",
+      "name": "Excel Spreadsheet",
+      "mime_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "features": ["multi_sheet", "formulas", "charts"]
+    },
+    {
+      "extension": "json",
+      "name": "JSON Data",
+      "mime_type": "application/json",
+      "features": ["nested_objects", "arrays", "pretty_print"]
+    },
+    {
+      "extension": "md",
+      "name": "Markdown",
+      "mime_type": "text/markdown",
+      "features": ["headings", "formatting", "code_blocks"]
+    },
+    {
+      "extension": "txt",
+      "name": "Plain Text",
+      "mime_type": "text/plain",
+      "features": ["encoding_detection", "word_count", "line_count"]
+    }
+  ],
+  "test_cases": {
+    "simple": {
+      "input": "test.txt",
+      "expected_output": "success"
+    },
+    "complex": {
+      "input": "document.pdf",
+      "expected_output": "success",
+      "metadata_required": true
+    },
+    "batch": {
+      "inputs": ["file1.csv", "file2.xlsx", "file3.json"],
+      "expected_output": "all_success"
+    }
+  },
+  "statistics": {
+    "total_formats": 7,
+    "implemented": 7,
+    "coverage": 100.0
+  }
+}

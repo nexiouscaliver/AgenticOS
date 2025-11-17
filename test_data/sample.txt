@@ -1,0 +1,26 @@
+Multi-Format Parser Agent Test Document
+
+This is a plain text file created to test the multi-format parser agent.
+
+Key Features Being Tested:
+1. Text file reading capabilities
+2. Encoding detection
+3. Line and word counting
+4. Content extraction
+
+The parser should be able to:
+- Read this file without errors
+- Detect the UTF-8 encoding
+- Count lines, words, and characters accurately
+- Display the full content properly
+
+Test Data:
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor
+incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
+exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+
+Special characters: àáâãäå çèéê ñ ü € £ ¥ © ® ™
+
+Numbers: 123456789 0.123 -456 3.14159
+
+End of test document.

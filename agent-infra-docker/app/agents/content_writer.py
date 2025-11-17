@@ -3,10 +3,10 @@ Content Writer Agent - Expert blog and article creation specialist
 """
 
 from textwrap import dedent
+
 from agno.agent import Agent
 from agno.db.postgres import PostgresDb
 from agno.tools.duckduckgo import DuckDuckGoTools
-
 from db.session import db_url
 
 
@@ -16,7 +16,7 @@ def get_content_writer_agent(
 ) -> Agent:
     """
     Content Writer Agent specialized in blog and article creation
-    
+
     Expertise:
     - Engaging blog posts and articles across multiple formats
     - SEO-optimized content structure and keyword integration
@@ -25,14 +25,11 @@ def get_content_writer_agent(
     - Content series and editorial calendar planning
     """
     from models.factory import ModelFactory, TaskType
-    
+
     # Get optimal model for creative writing tasks
-    model = ModelFactory.get_optimal_model(
-        task_type=TaskType.CREATIVE,
-        priority="balanced"
-    )
+    model = ModelFactory.get_optimal_model(task_type=TaskType.CREATIVE, priority="balanced")
     model_instance = ModelFactory.create_model(model)
-    
+
     return Agent(
         id="content-writer-agent",
         name="Content Writer",
