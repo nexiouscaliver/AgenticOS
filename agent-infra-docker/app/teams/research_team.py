@@ -6,10 +6,10 @@ from textwrap import dedent
 from agno.team import Team
 from agno.db.postgres import PostgresDb
 
-from agents.web_agent import get_web_agent
-from agents.research_analyst import get_research_analyst_agent
-from agents.fact_checker import get_fact_checker_agent
-from db.session import db_url
+from app.agents.web_agent import get_web_agent
+from app.agents.research_analyst import get_research_analyst_agent
+from app.agents.fact_checker import get_fact_checker_agent
+from app.db.session import db_url
 
 
 def get_research_team(debug_mode: bool = False) -> Team:

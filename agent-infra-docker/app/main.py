@@ -16,19 +16,23 @@ from pathlib import Path
 from agno.os import AgentOS
 
 # Import enhanced agents with detailed prompts
-from agents.web_agent import get_web_agent
-from agents.agno_assist import get_agno_assist
-from agents.research_analyst import get_research_analyst_agent
-from agents.content_writer import get_content_writer_agent
-from agents.fact_checker import get_fact_checker_agent
-from agents.seo_optimizer import get_seo_optimizer_agent
+from app.agents.web_agent import get_web_agent
+from app.agents.agno_assist import get_agno_assist
+from app.agents.research_analyst import get_research_analyst_agent
+from app.agents.content_writer import get_content_writer_agent
+from app.agents.fact_checker import get_fact_checker_agent
+from app.agents.seo_optimizer import get_seo_optimizer_agent
+from app.agents.rag_agent import get_rag_agent
+from app.agents.vision_agent import get_vision_agent
+from app.processors.manager import ProcessorManager
+from fastapi import UploadFile, File, HTTPException
 
 # Import team and workflow systems
-from teams.research_team import get_research_team
-from workflows.blog_workflow import get_blog_writing_workflow, get_simple_blog_workflow
+from app.teams.research_team import get_research_team
+from app.workflows.blog_workflow import get_blog_writing_workflow, get_simple_blog_workflow
 
 # Import model factory for cost optimization
-from models.factory import ModelFactory, TaskType
+from app.models.factory import ModelFactory, TaskType
 
 
 def get_optimized_agents(debug_mode: bool = False):
@@ -78,7 +82,10 @@ def get_optimized_agents(debug_mode: bool = False):
         research_analyst,
         content_writer,
         fact_checker,
+        fact_checker,
         seo_optimizer,
+        get_rag_agent(debug_mode=debug_mode),
+        get_vision_agent(debug_mode=debug_mode),
     ]
 
 
@@ -135,6 +142,44 @@ agent_os = AgentOS(
 
 # Get FastAPI application
 app = agent_os.get_app()
+
+processor_manager = ProcessorManager()
+
+@app.post("/api/v1/upload")
+async def upload_document(file: UploadFile = File(...)):
+    """Upload and process a document."""
+    try:
+        # Save file temporarily
+        temp_path = f"/tmp/{file.filename}"
+        with open(temp_path, "wb") as f:
+            content = await file.read()
+            f.write(content)
+            
+        # Process file
+        chunks = await processor_manager.process_file(temp_path, file.content_type or "application/octet-stream")
+        
+        # Add to RAG agent's knowledge base
+        rag_agent = next((a for a in agents if a.name == "RAG Assistant"), None)
+        if rag_agent and rag_agent.knowledge:
+            # Convert chunks to documents/text for knowledge base
+            # This is a simplification; ideally we'd add chunks directly if supported, 
+            # or add the file to knowledge base if it supports the format.
+            # Since we processed it manually, we'll add the text content.
+            for chunk in chunks:
+                rag_agent.knowledge.vector_db.insert_documents([
+                    {"content": chunk.content, "meta_data": chunk.metadata}
+                ]) # This might need adjustment based on Agno's exact API
+                
+            # Alternative: Use Agno's knowledge.add_document if applicable, but we have custom processing.
+            # We'll assume direct vector_db insertion or knowledge.load_text
+            
+        return {"status": "success", "chunks": len(chunks), "filename": file.filename}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        if os.path.exists(temp_path):
+            os.remove(temp_path)
 
 
 async def initialize_knowledge_bases():

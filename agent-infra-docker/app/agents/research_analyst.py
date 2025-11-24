@@ -10,7 +10,7 @@ from agno.knowledge import Knowledge
 from agno.knowledge.embedder.openai import OpenAIEmbedder
 from agno.vectordb.pgvector import PgVector, SearchType
 
-from db.session import db_url
+from app.db.session import db_url
 
 
 def get_research_analyst_agent(
@@ -27,7 +27,7 @@ def get_research_analyst_agent(
     - Trend identification and pattern recognition
     - Comprehensive source evaluation and citation
     """
-    from models.factory import ModelFactory, TaskType
+    from app.models.factory import ModelFactory, TaskType
     
     # Get optimal model for research tasks with cost optimization
     model = ModelFactory.get_optimal_model(
