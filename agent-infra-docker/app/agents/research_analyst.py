@@ -3,12 +3,16 @@ Research Analyst Agent - Deep investigative research with academic rigor
 """
 
 from textwrap import dedent
+from dotenv import load_dotenv
+
+load_dotenv()
 from agno.agent import Agent
 from agno.db.postgres import PostgresDb
 from agno.tools.duckduckgo import DuckDuckGoTools
 from agno.knowledge import Knowledge
 from agno.knowledge.embedder.openai import OpenAIEmbedder
 from agno.vectordb.pgvector import PgVector, SearchType
+from agno.models.openai import OpenAIChat
 
 from db.session import db_url
 

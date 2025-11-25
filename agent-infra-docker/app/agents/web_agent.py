@@ -1,10 +1,16 @@
 from textwrap import dedent
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from agno.agent import Agent
 from agno.db.postgres import PostgresDb
 from agno.models.openai import OpenAIChat
 from agno.models.google import Gemini
 from agno.tools.duckduckgo import DuckDuckGoTools
+from agno.knowledge import Knowledge
+from agno.knowledge.embedder.openai import OpenAIEmbedder
+from agno.vectordb.pgvector import PgVector, SearchType
 
 from db.session import db_url
 
@@ -178,6 +184,18 @@ def get_web_agent(
         """),
         # Enhanced storage and memory capabilities
         db=PostgresDb(id="advanced-research-storage", db_url=db_url),
+        
+        # Knowledge base for research methodologies and best practices
+        knowledge=Knowledge(
+            contents_db=PostgresDb(id="advanced-research-storage", db_url=db_url),
+            vector_db=PgVector(
+                db_url=db_url,
+                table_name="advanced_research_knowledge",
+                search_type=SearchType.hybrid,
+                embedder=OpenAIEmbedder(id="text-embedding-3-small"),
+            ),
+        ),
+        search_knowledge=True,
         # Expanded history for context continuity
         add_history_to_context=True,
         num_history_runs=5,  # More history for complex research threads

@@ -1,4 +1,7 @@
 from textwrap import dedent
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from agno.agent import Agent
 from agno.db.postgres import PostgresDb

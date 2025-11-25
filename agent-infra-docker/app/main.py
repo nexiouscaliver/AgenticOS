@@ -29,7 +29,8 @@ from workflows.blog_workflow import get_blog_writing_workflow, get_simple_blog_w
 
 # Import model factory for cost optimization
 from models.factory import ModelFactory, TaskType
-
+import dotenv
+dotenv.load_dotenv()
 
 def get_optimized_agents(debug_mode: bool = False):
     """
