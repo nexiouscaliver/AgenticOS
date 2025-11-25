@@ -16,7 +16,7 @@ from db.session import db_url
 
 
 def get_web_agent(
-    model_id: str = "deepseek-chat",  # Use cost-effective model
+    model_id: str = "glm-4.5-air-fast",  # Local GLM with tool calling support
     debug_mode: bool = False,
 ) -> Agent:
     """
@@ -180,7 +180,12 @@ def get_web_agent(
             Current Context:
             - User ID: {current_user_id}
             - Specialization: Advanced web research and analysis
-            - Standards: Professional research quality with academic rigor\
+            - Standards: Professional research quality with academic rigor
+            
+            ## TOOL USAGE 🛠️
+            - Use `duckduckgo_search` for general web searches.
+            - Use `duckduckgo_news` for finding recent news articles.
+            - Do NOT use `web_search`, `search`, or other hallucinated tool names.\
         """),
         # Enhanced storage and memory capabilities
         db=PostgresDb(id="advanced-research-storage", db_url=db_url),

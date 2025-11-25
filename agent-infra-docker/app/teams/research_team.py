@@ -33,7 +33,7 @@ def get_research_team(debug_mode: bool = False) -> Team:
     - Source credibility assessment and citation management
     """
     
-    # Initialize team members with cost-optimized models
+    # Initialize team members with local GLM models (with tool calling support)
     web_research_agent = get_web_agent(model_id="glm-4.5-air-fast", debug_mode=debug_mode)
     research_analyst = get_research_analyst_agent(model_id="glm-4.5-air-fast", debug_mode=debug_mode)
     fact_checker = get_fact_checker_agent(model_id="glm-4.5-air", debug_mode=debug_mode)

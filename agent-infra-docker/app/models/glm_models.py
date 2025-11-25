@@ -1,10 +1,10 @@
 """
-GLM (ChatGLM) model provider - Good for multilingual content
+GLM (ChatGLM) model provider - Local GLM models with tool calling support
 """
 
 import os
 from typing import Optional
-from .glm45_provider import GLM45Provider
+from .glm import GLM45Provider  # Use new provider with tool calling support
 
 
 def create_glm_model(

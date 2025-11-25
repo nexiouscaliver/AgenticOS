@@ -18,7 +18,7 @@ from db.session import db_url
 
 
 def get_research_analyst_agent(
-    model_id: str = "deepseek-chat",  # Cost-effective for research
+    model_id: str = "glm-4.5-air-fast",  # Local GLM with tool calling support
     debug_mode: bool = False,
 ) -> Agent:
     """
@@ -211,7 +211,12 @@ def get_research_analyst_agent(
             Current Context:
             - User ID: {current_user_id}
             - Specialization: Academic-quality research and analysis
-            - Standards: Publication-grade methodology and evidence evaluation\
+            - Standards: Publication-grade methodology and evidence evaluation
+            
+            ## TOOL USAGE 🛠️
+            - Use `duckduckgo_search` for general web searches.
+            - Use `duckduckgo_news` for finding recent news articles.
+            - Do NOT use `web_search`, `search`, or other hallucinated tool names.\
         """),
         # Knowledge base for research methodologies and best practices
         knowledge=Knowledge(
