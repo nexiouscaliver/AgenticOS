@@ -61,8 +61,8 @@ class ModelFactory:
         "deepseek-coder": 0.00014,
         
         # GLM models (supported only)
-        "glm-4.5": 0.00020,
-        "glm-4.5-air": 0.00015,
+        "glm-4.5-air": 0.00020,
+        "glm-4.5-air-fast": 0.00015,
         
         # Gemini models
         "gemini-2.0-flash": 0.00030,
@@ -72,44 +72,44 @@ class ModelFactory:
     # Task-specific model recommendations
     TASK_MODEL_MAP = {
         TaskType.RESEARCH: {
-            "budget": "deepseek-chat",
-            "balanced": "gpt-4o-mini", 
-            "premium": "gemini-2.0-flash"
+            "budget": "glm-4.5-air-fast",
+            "balanced": "glm-4.5-air", 
+            "premium": "glm-4.5-air"
         },
         TaskType.CREATIVE: {
-            "budget": "glm-4.5-air",
-            "balanced": "gpt-4o-mini",
-            "premium": "gpt-4o"
+            "budget": "glm-4.5-air-fast",
+            "balanced": "glm-4.5-air",
+            "premium": "glm-4.5-air"
         },
         TaskType.ANALYSIS: {
-            "budget": "deepseek-chat",
+            "budget": "glm-4.5-air-fast",
             "balanced": "glm-4.5-air",
-            "premium": "gpt-4o"
+            "premium": "glm-4.5-air"
         },
         TaskType.CODING: {
-            "budget": "deepseek-coder",
-            "balanced": "gpt-4o-mini",
-            "premium": "gpt-4o"
+            "budget": "glm-4.5-air-fast",
+            "balanced": "glm-4.5-air",
+            "premium": "glm-4.5-air"
         },
         TaskType.SIMPLE: {
-            "budget": "deepseek-chat",
-            "balanced": "glm-4.5-air",
-            "premium": "gpt-4o-mini"
+            "budget": "glm-4.5-air-fast",
+            "balanced": "glm-4.5-air-fast",
+            "premium": "glm-4.5-air"
         },
         TaskType.COMPLEX: {
-            "budget": "gpt-4o-mini",
-            "balanced": "gpt-4o",
-            "premium": "gemini-1.5-pro"
+            "budget": "glm-4.5-air",
+            "balanced": "glm-4.5-air",
+            "premium": "glm-4.5-air"
         },
         TaskType.MULTILINGUAL: {
-            "budget": "glm-4.5-air",
-            "balanced": "glm-4.5",
-            "premium": "gpt-4o"
+            "budget": "glm-4.5-air-fast",
+            "balanced": "glm-4.5-air",
+            "premium": "glm-4.5-air"
         },
         TaskType.FAST: {
-            "budget": "glm-4.5-air",
-            "balanced": "deepseek-chat",
-            "premium": "gpt-4o-mini"
+            "budget": "glm-4.5-air-fast",
+            "balanced": "glm-4.5-air-fast",
+            "premium": "glm-4.5-air"
         }
     }
     
@@ -183,7 +183,7 @@ class ModelFactory:
     @classmethod
     def get_cheapest_model(self) -> str:
         """Get the most cost-effective model available"""
-        return "deepseek-chat"  # Currently cheapest at $0.00014/1K tokens
+        return "glm-4.5-air-fast"  # Currently cheapest at $0.00014/1K tokens
     
     @classmethod
     def get_model_cost(self, model_id: str) -> float:
@@ -298,7 +298,7 @@ def get_optimal_model(
 
 
 # Environment-based model selection
-def get_model_from_env(env_var: str = "DEFAULT_MODEL_ID", fallback: str = "deepseek-chat") -> Model:
+def get_model_from_env(env_var: str = "DEFAULT_MODEL_ID", fallback: str = "glm-4.5-air-fast") -> Model:
     """Get model from environment variable with fallback"""
     model_id = os.getenv(env_var, fallback)
     return ModelFactory.create_model(model_id)

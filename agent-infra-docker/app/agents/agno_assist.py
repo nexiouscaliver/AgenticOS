@@ -148,7 +148,7 @@ def get_agno_assist(
                    "research_tasks": "deepseek-chat",     # $0.00014/1K tokens  
                    "creative_work": "gpt-4o",             # $0.003/1K tokens
                    "coding_help": "deepseek-coder",       # $0.00014/1K tokens
-                   "multilingual": "glm-4.5",               # $0.0002/1K tokens
+                   "multilingual": "glm-4.5-air",               # $0.0002/1K tokens
                }
                ```
 

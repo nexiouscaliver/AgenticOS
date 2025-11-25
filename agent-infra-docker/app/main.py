@@ -39,37 +39,37 @@ def get_optimized_agents(debug_mode: bool = False):
     
     # Enhanced Web Search Agent with cost-optimized model
     web_agent = get_web_agent(
-        model_id="deepseek-chat",  # Most cost-effective for research
+        model_id="glm-4.5-air-fast",  # Most cost-effective for research
         debug_mode=debug_mode
     )
     
     # Enhanced Agno Documentation Expert
     agno_assist = get_agno_assist(
-        model_id="gpt-4o-mini",  # Good balance for documentation
+        model_id="glm-4.5-air",  # Good balance for documentation
         debug_mode=debug_mode
     )
     
     # Specialized Research Analyst
     research_analyst = get_research_analyst_agent(
-        model_id="deepseek-chat",  # Cost-effective for analysis
+        model_id="glm-4.5-air-fast",  # Cost-effective for analysis
         debug_mode=debug_mode
     )
     
     # Professional Content Writer
     content_writer = get_content_writer_agent(
-        model_id="gpt-4o-mini",  # Good for creative writing
+        model_id="glm-4.5-air",  # Good for creative writing
         debug_mode=debug_mode
     )
     
     # Accuracy-focused Fact Checker
     fact_checker = get_fact_checker_agent(
-        model_id="gpt-4o-mini",  # Reliable for verification
+        model_id="glm-4.5-air",  # Reliable for verification
         debug_mode=debug_mode
     )
     
     # SEO Optimization Specialist
     seo_optimizer = get_seo_optimizer_agent(
-        model_id="gpt-4o-mini",  # Good for analytical tasks
+        model_id="glm-4.5-air",  # Good for analytical tasks
         debug_mode=debug_mode
     )
     

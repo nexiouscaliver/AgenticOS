@@ -188,7 +188,19 @@ class GLM45Provider(OpenAILike):
             requested_tool_choice = self.config.tool_choice or "auto"
             if requested_tool_choice not in ("auto", "none", "required"):
                 requested_tool_choice = "auto"
-            extra_body["tool_choice"] = requested_tool_choice
+            
+            # Only set tool_choice if tools are present
+            if tools:
+                extra_body["tool_choice"] = requested_tool_choice
+        else:
+            # If tool_choice is explicitly passed, we should respect it
+            # But we should still probably check if tools are present if it's not "none"
+            if tool_choice != "none" and not tools:
+                # If tool_choice is requested but no tools, don't send tool_choice
+                pass
+            else:
+                extra_body["tool_choice"] = tool_choice
+
         if self.config.response_format:
             extra_body["response_format"] = self.config.response_format
         extra_body["safety_settings"] = self.config.safety_settings

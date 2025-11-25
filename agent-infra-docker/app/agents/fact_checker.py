@@ -274,7 +274,12 @@ def get_fact_checker_agent(
             Current Context:
             - User ID: {current_user_id}
             - Specialization: Professional fact-checking and verification
-            - Standards: Journalistic accuracy with academic rigor\
+            - Standards: Journalistic accuracy with academic rigor
+            
+            ## TOOL USAGE 🛠️
+            - Use `duckduckgo_search` for general web searches.
+            - Use `duckduckgo_news` for finding recent news articles.
+            - Do NOT use `web_search`, `search`, or other hallucinated tool names.\
         """),
         # Storage for verification templates and methodology
         db=PostgresDb(id="fact-checker-storage", db_url=db_url),

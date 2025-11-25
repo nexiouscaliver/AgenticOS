@@ -34,12 +34,12 @@ def get_research_team(debug_mode: bool = False) -> Team:
     """
     
     # Initialize team members with cost-optimized models
-    web_research_agent = get_web_agent(model_id="deepseek-chat", debug_mode=debug_mode)
-    research_analyst = get_research_analyst_agent(model_id="deepseek-chat", debug_mode=debug_mode)
-    fact_checker = get_fact_checker_agent(model_id="gpt-4o-mini", debug_mode=debug_mode)
+    web_research_agent = get_web_agent(model_id="glm-4.5-air-fast", debug_mode=debug_mode)
+    research_analyst = get_research_analyst_agent(model_id="glm-4.5-air-fast", debug_mode=debug_mode)
+    fact_checker = get_fact_checker_agent(model_id="glm-4.5-air", debug_mode=debug_mode)
     
     # Create a secondary web agent for additional research capacity
-    secondary_web_agent = get_web_agent(model_id="glm-4.5-air", debug_mode=debug_mode)
+    secondary_web_agent = get_web_agent(model_id="glm-4.5-air-fast", debug_mode=debug_mode)
     secondary_web_agent.id = "secondary-web-research-agent"
     secondary_web_agent.name = "Secondary Web Research Agent"
     
