@@ -529,8 +529,7 @@ class GLM45Provider(OpenAILike):
         params = super().get_request_params(
             response_format=response_format, 
             tools=tools, 
-            tool_choice=tool_choice,
-            run_response=run_response
+            tool_choice=tool_choice
         )
 
         # Decide thinking mode based on the flag set for this request
