@@ -44,7 +44,7 @@ def get_blog_writing_workflow(debug_mode: bool = False) -> Workflow:
     fact_checker = get_fact_checker_agent(debug_mode=debug_mode)
     
     # Custom step functions for workflow optimization
-    def topic_analysis_function(step_input: StepInput) -> StepOutput:
+    async def topic_analysis_function(step_input: StepInput) -> StepOutput:
         """
         Analyze blog topic and create research strategy
         """
@@ -68,7 +68,7 @@ def get_blog_writing_workflow(debug_mode: bool = False) -> Workflow:
         
         try:
             # Use research team for initial analysis
-            response = research_team.run(analysis_prompt)
+            response = await research_team.arun(analysis_prompt)
             
             return StepOutput(
                 content=f"""
@@ -88,7 +88,7 @@ def get_blog_writing_workflow(debug_mode: bool = False) -> Workflow:
                 success=False,
             )
     
-    def content_planning_function(step_input: StepInput) -> StepOutput:
+    async def content_planning_function(step_input: StepInput) -> StepOutput:
         """
         Create detailed content plan based on research findings
         """
@@ -116,7 +116,7 @@ def get_blog_writing_workflow(debug_mode: bool = False) -> Workflow:
         """
         
         try:
-            response = content_writer.run(planning_prompt)
+            response = await content_writer.arun(planning_prompt)
             
             return StepOutput(
                 content=f"""
@@ -137,7 +137,7 @@ def get_blog_writing_workflow(debug_mode: bool = False) -> Workflow:
                 success=False,
             )
     
-    def seo_fact_check_integration_function(step_input: StepInput) -> StepOutput:
+    async def seo_fact_check_integration_function(step_input: StepInput) -> StepOutput:
         """
         Integrate SEO optimization and fact-checking results
         """
@@ -163,7 +163,7 @@ def get_blog_writing_workflow(debug_mode: bool = False) -> Workflow:
         """
         
         try:
-            response = content_writer.run(integration_prompt)
+            response = await content_writer.arun(integration_prompt)
             
             return StepOutput(
                 content=f"""
