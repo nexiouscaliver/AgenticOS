@@ -3,6 +3,9 @@ Research Team - Coordinated multi-agent research system
 """
 
 from textwrap import dedent
+from dotenv import load_dotenv
+
+load_dotenv()
 from agno.team import Team
 from agno.db.postgres import PostgresDb
 
@@ -208,5 +211,6 @@ def get_research_team(debug_mode: bool = False) -> Team:
         # Professional team formatting
         markdown=True,
         add_datetime_to_context=True,
+        enable_session_summaries=True,
         debug_mode=debug_mode,
     )

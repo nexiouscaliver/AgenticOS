@@ -3,6 +3,9 @@ SEO Optimizer Agent - Search engine optimization and content performance special
 """
 
 from textwrap import dedent
+from dotenv import load_dotenv
+
+load_dotenv()
 from agno.agent import Agent
 from agno.db.postgres import PostgresDb
 from agno.tools.duckduckgo import DuckDuckGoTools

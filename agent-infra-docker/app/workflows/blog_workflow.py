@@ -3,6 +3,9 @@ Blog Writing Workflow - Comprehensive blog creation with research team and optim
 """
 
 from textwrap import dedent
+from dotenv import load_dotenv
+
+load_dotenv()
 from agno.workflow import Workflow, Step, Parallel, Condition
 from agno.workflow.types import StepInput, StepOutput
 from agno.db.postgres import PostgresDb
