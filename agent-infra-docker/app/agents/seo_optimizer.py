@@ -14,7 +14,7 @@ from db.session import db_url
 
 
 def get_seo_optimizer_agent(
-    model_id: str = "gpt-4o-mini",  # Good for analytical SEO tasks
+    model_id: str = "glm-4.5-air",  # Good for analytical SEO tasks
     debug_mode: bool = False,
 ) -> Agent:
     """

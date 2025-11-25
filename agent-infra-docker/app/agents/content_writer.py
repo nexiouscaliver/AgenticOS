@@ -14,7 +14,7 @@ from db.session import db_url
 
 
 def get_content_writer_agent(
-    model_id: str = "gpt-4o-mini",  # Good balance for creative writing
+    model_id: str = "glm-4.5-air",  # Good balance for creative writing
     debug_mode: bool = False,
 ) -> Agent:
     """

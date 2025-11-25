@@ -12,7 +12,7 @@ from agno.tools.duckduckgo import DuckDuckGoTools
 from agno.knowledge import Knowledge
 from agno.knowledge.embedder.openai import OpenAIEmbedder
 from agno.vectordb.pgvector import PgVector, SearchType
-from agno.models.openai import OpenAIChat
+from agno.vectordb.pgvector import PgVector, SearchType
 
 from db.session import db_url
 

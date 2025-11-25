@@ -5,8 +5,6 @@ load_dotenv()
 
 from agno.agent import Agent
 from agno.db.postgres import PostgresDb
-from agno.models.openai import OpenAIChat
-from agno.models.google import Gemini
 from agno.tools.duckduckgo import DuckDuckGoTools
 from agno.knowledge import Knowledge
 from agno.knowledge.embedder.openai import OpenAIEmbedder

@@ -2,7 +2,7 @@
 AgenticOS - Enhanced Multi-Agent System with Advanced Capabilities
 
 Features:
-- Multi-model support (OpenAI, DeepSeek, GLM, Gemini) with cost optimization
+- Local GLM model support with cost optimization
 - Specialized agents for research, content creation, and optimization
 - Research team with coordinated multi-agent collaboration
 - Blog writing workflow with parallel processing and quality gates
@@ -174,7 +174,7 @@ if __name__ == "__main__":
         print(f"   {i}. {workflow.name} - {workflow.id}")
     
     print("💰 Cost Optimization Features:")
-    print("   • Multi-model support: OpenAI, DeepSeek, GLM, Gemini")
+    print("   • Model support: Local GLM (Air/Fast)")
     print("   • Intelligent model selection based on task requirements")
     print("   • Cost-effective defaults with performance optimization")
     

@@ -6,19 +6,6 @@ import os
 from enum import Enum
 from typing import Dict, Any, Optional, Union
 from agno.models.base import Model
-from agno.models.openai import OpenAIChat
-from agno.models.google import Gemini
-
-from .openai_models import (
-    create_openai_model, 
-    get_openai_cost_per_token,
-    get_best_openai_model_for_task
-)
-from .deepseek_models import (
-    create_deepseek_model,
-    get_deepseek_cost_per_token, 
-    get_best_deepseek_model_for_task
-)
 from .glm_models import (
     create_glm_model,
     get_glm_cost_per_token,
@@ -26,12 +13,10 @@ from .glm_models import (
 )
 
 
+
 class ModelProvider(Enum):
     """Available model providers"""
-    OPENAI = "openai"
-    DEEPSEEK = "deepseek"
     GLM = "glm"
-    GEMINI = "gemini"
 
 
 class TaskType(Enum):
@@ -51,22 +36,9 @@ class ModelFactory:
     
     # Model cost per 1K tokens (approximate)
     MODEL_COSTS = {
-        # OpenAI models
-        "gpt-4o-mini": 0.00015,
-        "gpt-4o": 0.00300,
-        "gpt-3.5-turbo": 0.00050,
-        
-        # DeepSeek models (cheapest)
-        "deepseek-chat": 0.00014,
-        "deepseek-coder": 0.00014,
-        
         # GLM models (supported only)
         "glm-4.5-air": 0.00020,
         "glm-4.5-air-fast": 0.00015,
-        
-        # Gemini models
-        "gemini-2.0-flash": 0.00030,
-        "gemini-1.5-pro": 0.00350,
     }
     
     # Task-specific model recommendations
@@ -135,16 +107,11 @@ class ModelFactory:
         if provider is None:
             provider = self._detect_provider(model_id)
         
-        if provider == ModelProvider.OPENAI:
-            return create_openai_model(model_id, **kwargs)
-        elif provider == ModelProvider.DEEPSEEK:
-            return create_deepseek_model(model_id, **kwargs)
-        elif provider == ModelProvider.GLM:
+        if provider == ModelProvider.GLM:
             return create_glm_model(model_id, **kwargs)
-        elif provider == ModelProvider.GEMINI:
-            return self._create_gemini_model(model_id, **kwargs)
         else:
-            raise ValueError(f"Unsupported provider: {provider}")
+            # Default to GLM
+            return create_glm_model(model_id, **kwargs)
     
     @classmethod
     def get_optimal_model(
@@ -224,30 +191,12 @@ class ModelFactory:
     @classmethod
     def _detect_provider(self, model_id: str) -> ModelProvider:
         """Auto-detect provider from model ID"""
-        if model_id.startswith(("gpt-", "text-", "davinci")):
-            return ModelProvider.OPENAI
-        elif model_id.startswith("deepseek"):
-            return ModelProvider.DEEPSEEK
-        elif model_id.startswith("glm"):
+        if model_id.startswith("glm"):
             return ModelProvider.GLM
-        elif model_id.startswith("gemini"):
-            return ModelProvider.GEMINI
         else:
-            # Default to OpenAI format
-            return ModelProvider.OPENAI
+            return ModelProvider.GLM
     
-    @classmethod
-    def _create_gemini_model(self, model_id: str, **kwargs) -> Gemini:
-        """Create Gemini model (existing integration)"""
-        api_key = os.getenv("GOOGLE_API_KEY")
-        if not api_key:
-            raise ValueError("GOOGLE_API_KEY environment variable is required")
-        
-        return Gemini(
-            id=model_id,
-            api_key=api_key,
-            **kwargs
-        )
+
     
     @classmethod
     def _find_cheapest_model(self, max_cost: float) -> str:

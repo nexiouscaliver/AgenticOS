@@ -7,16 +7,14 @@ from agno.agent import Agent
 from agno.db.postgres import PostgresDb
 from agno.knowledge import Knowledge
 from agno.knowledge.embedder.openai import OpenAIEmbedder
-from agno.models.openai import OpenAIChat
 from agno.tools.duckduckgo import DuckDuckGoTools
 from agno.vectordb.pgvector import PgVector, SearchType
-from agno.models.google import Gemini
 
 from db.session import db_url
 
 
 def get_agno_assist(
-    model_id: str = "gpt-4o-mini",  # Cost-effective model for documentation
+    model_id: str = "glm-4.5-air",  # Cost-effective model for documentation
     debug_mode: bool = False,
 ) -> Agent:
     """
@@ -100,7 +98,7 @@ def get_agno_assist(
                # Always provide complete, runnable examples
                from textwrap import dedent
                from agno.agent import Agent
-               from agno.models.openai import OpenAIChat
+               from app.models.glm_models import GLM45Provider
                from agno.tools.duckduckgo import DuckDuckGoTools
                from agno.db.postgres import PostgresDb
                
@@ -110,7 +108,7 @@ def get_agno_assist(
                    \"\"\"
                    return Agent(
                        id="production-agent",
-                       model=OpenAIChat(id="gpt-4o-mini"),
+                       model=GLM45Provider(id="glm-4.5-air-fast"),
                        tools=[DuckDuckGoTools()],
                        instructions=dedent(\"\"\"
                            Comprehensive instructions here...
@@ -144,10 +142,10 @@ def get_agno_assist(
                ```python
                # Cost-optimized model selection
                TASK_MODEL_MAP = {
-                   "simple_queries": "gpt-4o-mini",      # $0.00015/1K tokens
-                   "research_tasks": "deepseek-chat",     # $0.00014/1K tokens  
-                   "creative_work": "gpt-4o",             # $0.003/1K tokens
-                   "coding_help": "deepseek-coder",       # $0.00014/1K tokens
+                   "simple_queries": "glm-4.5-air-fast",      # $0.00015/1K tokens
+                   "research_tasks": "glm-4.5-air-fast",     # $0.00014/1K tokens  
+                   "creative_work": "glm-4.5-air",             # $0.003/1K tokens
+                   "coding_help": "glm-4.5-air",       # $0.00014/1K tokens
                    "multilingual": "glm-4.5-air",               # $0.0002/1K tokens
                }
                ```
