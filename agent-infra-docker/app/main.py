@@ -9,26 +9,37 @@ Features:
 - Advanced prompts and professional-quality outputs
 """
 
+# Load environment variables from .env file FIRST
+from dotenv import load_dotenv
+from pathlib import Path
+
+# Load .env file from the parent directory (agent-infra-docker/.env)
+env_path = Path(__file__).parent.parent / ".env"
+load_dotenv(dotenv_path=env_path)
+
 import asyncio
 import os
-from pathlib import Path
 
 from agno.os import AgentOS
 
 # Import enhanced agents with detailed prompts
-from agents.web_agent import get_web_agent
-from agents.agno_assist import get_agno_assist
-from agents.research_analyst import get_research_analyst_agent
-from agents.content_writer import get_content_writer_agent
-from agents.fact_checker import get_fact_checker_agent
-from agents.seo_optimizer import get_seo_optimizer_agent
+from app.agents.web_agent import get_web_agent
+from app.agents.agno_assist import get_agno_assist
+from app.agents.research_analyst import get_research_analyst_agent
+from app.agents.content_writer import get_content_writer_agent
+from app.agents.fact_checker import get_fact_checker_agent
+from app.agents.seo_optimizer import get_seo_optimizer_agent
+from app.agents.rag_agent import get_rag_agent
+from app.agents.vision_agent import get_vision_agent
+from app.processors.manager import ProcessorManager
+from fastapi import UploadFile, File, HTTPException
 
 # Import team and workflow systems
-from teams.research_team import get_research_team
-from workflows.blog_workflow import get_blog_writing_workflow, get_simple_blog_workflow
+from app.teams.research_team import get_research_team
+from app.workflows.blog_workflow import get_blog_writing_workflow, get_simple_blog_workflow
 
 # Import model factory for cost optimization
-from models.factory import ModelFactory, TaskType
+from app.models.factory import ModelFactory, TaskType
 
 
 def get_optimized_agents(debug_mode: bool = False):
@@ -78,7 +89,10 @@ def get_optimized_agents(debug_mode: bool = False):
         research_analyst,
         content_writer,
         fact_checker,
+        fact_checker,
         seo_optimizer,
+        get_rag_agent(debug_mode=debug_mode),
+        get_vision_agent(debug_mode=debug_mode),
     ]
 
 
@@ -135,6 +149,56 @@ agent_os = AgentOS(
 
 # Get FastAPI application
 app = agent_os.get_app()
+
+processor_manager = ProcessorManager()
+
+@app.post("/api/v1/upload")
+async def upload_document(file: UploadFile = File(...)):
+    """Upload and process a document."""
+    temp_path = None
+    processed_file_path = None
+    try:
+        # Save file temporarily
+        temp_path = f"/tmp/{file.filename}"
+        with open(temp_path, "wb") as f:
+            content = await file.read()
+            f.write(content)
+            
+        # Process file
+        chunks = await processor_manager.process_file(temp_path, file.content_type or "application/octet-stream")
+        
+        # Add to RAG agent's knowledge base
+        rag_agent = next((a for a in agents if a.name == "RAG Assistant"), None)
+        if rag_agent and rag_agent.knowledge:
+            # Combine all chunks into a single document with metadata
+            full_content = "\n\n".join([
+                f"[Page/Section {chunk.metadata.get('page', chunk.metadata.get('rows', 'N/A'))}]\n{chunk.content}"
+                for chunk in chunks
+            ])
+            
+            # Save processed content to a temporary text file
+            processed_file_path = f"/tmp/processed_{file.filename}.txt"
+            with open(processed_file_path, "w", encoding="utf-8") as f:
+                f.write(full_content)
+            
+            # Use the Knowledge API to add the file
+            await rag_agent.knowledge.add_content_async(
+                name=file.filename,
+                path=processed_file_path,
+            )
+            
+        return {"status": "success", "chunks": len(chunks), "filename": file.filename}
+        
+    except Exception as e:
+        import traceback
+        error_detail = f"{str(e)}\n\nTraceback:\n{traceback.format_exc()}"
+        print(f"ERROR in upload_document: {error_detail}")
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        if temp_path and os.path.exists(temp_path):
+            os.remove(temp_path)
+        if processed_file_path and os.path.exists(processed_file_path):
+            os.remove(processed_file_path)
 
 
 async def initialize_knowledge_bases():

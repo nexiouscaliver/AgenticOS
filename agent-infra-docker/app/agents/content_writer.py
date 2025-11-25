@@ -7,7 +7,7 @@ from agno.agent import Agent
 from agno.db.postgres import PostgresDb
 from agno.tools.duckduckgo import DuckDuckGoTools
 
-from db.session import db_url
+from app.db.session import db_url
 
 
 def get_content_writer_agent(
@@ -24,7 +24,7 @@ def get_content_writer_agent(
     - Data-driven storytelling and narrative construction
     - Content series and editorial calendar planning
     """
-    from models.factory import ModelFactory, TaskType
+    from app.models.factory import ModelFactory, TaskType
     
     # Get optimal model for creative writing tasks
     model = ModelFactory.get_optimal_model(

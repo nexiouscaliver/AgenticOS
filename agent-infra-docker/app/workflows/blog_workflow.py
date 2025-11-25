@@ -7,11 +7,11 @@ from agno.workflow import Workflow, Step, Parallel, Condition
 from agno.workflow.types import StepInput, StepOutput
 from agno.db.postgres import PostgresDb
 
-from teams.research_team import get_research_team
-from agents.content_writer import get_content_writer_agent
-from agents.seo_optimizer import get_seo_optimizer_agent
-from agents.fact_checker import get_fact_checker_agent
-from db.session import db_url
+from app.teams.research_team import get_research_team
+from app.agents.content_writer import get_content_writer_agent
+from app.agents.seo_optimizer import get_seo_optimizer_agent
+from app.agents.fact_checker import get_fact_checker_agent
+from app.db.session import db_url
 
 
 def get_blog_writing_workflow(debug_mode: bool = False) -> Workflow:

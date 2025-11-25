@@ -13,6 +13,21 @@ services:
     networks:
       - agent-os
 
+  frontend:
+    build:
+      context: ../agent-frontend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - ../agent-frontend:/app
+      - /app/node_modules
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    networks:
+      - agent-os
+
   api:
     build:
       context: .

@@ -9,6 +9,12 @@ ENV PYTHONUNBUFFERED=1 \
     UV_CACHE_DIR=/tmp/uv-cache \
     UV_HTTP_TIMEOUT=120
 
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    tesseract-ocr \
+    libtesseract-dev \
+    && rm -rf /var/lib/apt/lists/*
+
 # Create non-root user
 ARG USER=app
 ARG UID=61000
