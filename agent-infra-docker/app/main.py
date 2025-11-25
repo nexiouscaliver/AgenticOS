@@ -88,8 +88,8 @@ def get_team_systems(debug_mode: bool = False):
     Create advanced team coordination systems
     """
     
-    # Comprehensive Research Team
-    research_team = get_research_team(debug_mode=debug_mode)
+    # Comprehensive Research Team with GLM model for coordination
+    research_team = get_research_team(model_id="glm-4.5-air", debug_mode=debug_mode)
     
     return [research_team]
 
@@ -125,7 +125,6 @@ workflows = get_workflow_systems(debug_mode=debug_mode)
 
 # Create the Enhanced AgentOS with all capabilities
 agent_os = AgentOS(
-    os_id="agenticos-enhanced",
     agents=agents,
     teams=teams,
     workflows=workflows,

@@ -13,9 +13,10 @@ from agents.web_agent import get_web_agent
 from agents.research_analyst import get_research_analyst_agent
 from agents.fact_checker import get_fact_checker_agent
 from db.session import db_url
+from models.factory import ModelFactory, TaskType
 
 
-def get_research_team(debug_mode: bool = False) -> Team:
+def get_research_team(model_id: str = "glm-4.5-air", debug_mode: bool = False) -> Team:
     """
     Research Team with specialized agents for comprehensive research
     
@@ -31,7 +32,22 @@ def get_research_team(debug_mode: bool = False) -> Team:
     - Academic-quality research methodology
     - Comprehensive analysis with multiple perspectives
     - Source credibility assessment and citation management
+    
+    Args:
+        model_id: Model to use for team leader coordination (default: glm-4.5-air)
+        debug_mode: Enable debug logging
     """
+    
+    # Initialize team leader model for coordination
+    # Get optimal model ID for the task type, then create the model instance
+    optimal_model_id = ModelFactory.get_optimal_model(
+        task_type=TaskType.ANALYSIS,
+        priority="balanced",
+    )
+    # Use the provided model_id if specified, otherwise use the optimal one
+    team_leader_model = ModelFactory.create_model(
+        model_id=model_id or optimal_model_id,
+    )
     
     # Initialize team members with local GLM models (with tool calling support)
     web_research_agent = get_web_agent(model_id="glm-4.5-air-fast", debug_mode=debug_mode)
@@ -46,6 +62,7 @@ def get_research_team(debug_mode: bool = False) -> Team:
     return Team(
         id="comprehensive-research-team",
         name="Comprehensive Research Team",
+        model=team_leader_model,  # Team leader model for coordination
         members=[
             web_research_agent,      # Primary web research with advanced prompts
             research_analyst,        # Academic analysis and methodology
