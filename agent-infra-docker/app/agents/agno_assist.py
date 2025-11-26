@@ -98,7 +98,7 @@ def get_agno_assist(
                # Always provide complete, runnable examples
                from textwrap import dedent
                from agno.agent import Agent
-               from app.models.glm_models import GLM45Provider
+               from app.models.factory import ModelFactory
                from agno.tools.duckduckgo import DuckDuckGoTools
                from agno.db.postgres import PostgresDb
                
@@ -106,9 +106,11 @@ def get_agno_assist(
                    \"\"\"
                    Production-ready agent with comprehensive configuration
                    \"\"\"
+                   model = ModelFactory.create_model(model_id="glm-4.5-air-fast")
+                   
                    return Agent(
                        id="production-agent",
-                       model=GLM45Provider(id="glm-4.5-air-fast"),
+                       model=model,
                        tools=[DuckDuckGoTools()],
                        instructions=dedent(\"\"\"
                            Comprehensive instructions here...

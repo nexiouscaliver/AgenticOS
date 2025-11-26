@@ -47,6 +47,7 @@ dependencies = [
   "pydantic-core==2.33.2",
   "pydantic-settings==2.10.1",
   "pygments==2.19.2",
+  "pypdf>=6.4.0",
   "python-dotenv==1.1.1",
   "python-multipart==0.0.20",
   "pyyaml==6.0.2",

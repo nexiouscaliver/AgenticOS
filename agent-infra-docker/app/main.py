@@ -22,6 +22,7 @@ from agents.research_analyst import get_research_analyst_agent
 from agents.content_writer import get_content_writer_agent
 from agents.fact_checker import get_fact_checker_agent
 from agents.seo_optimizer import get_seo_optimizer_agent
+from agents.rag_agent import get_rag_agent
 
 # Import team and workflow systems
 from teams.research_team import get_research_team
@@ -73,6 +74,12 @@ def get_optimized_agents(debug_mode: bool = False):
         debug_mode=debug_mode
     )
     
+    # Versatile RAG Agent
+    rag_agent = get_rag_agent(
+        model_id="glm-4.5-air",
+        debug_mode=debug_mode
+    )
+    
     return [
         web_agent,
         agno_assist,
@@ -80,6 +87,7 @@ def get_optimized_agents(debug_mode: bool = False):
         content_writer,
         fact_checker,
         seo_optimizer,
+        rag_agent,
     ]
 
 
