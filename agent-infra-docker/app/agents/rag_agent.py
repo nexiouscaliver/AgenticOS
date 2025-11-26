@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 import pandas as pd
 
 from agno.agent import Agent
+from agno.db.postgres import PostgresDb
 from agno.knowledge import Knowledge
 from agno.knowledge.reader.pdf_reader import PDFReader
 from agno.knowledge.reader.text_reader import TextReader
@@ -175,6 +176,7 @@ def get_rag_agent(
     
     # Define Knowledge Base
     knowledge_base = Knowledge(
+        contents_db=PostgresDb(id="versatile-rag-storage", db_url=db_url),
         vector_db=PgVector(
             db_url=db_url,
             table_name="rag_documents",
@@ -207,6 +209,8 @@ def get_rag_agent(
             - Provide citations or references to the source file when possible.
             - If the information is not in the knowledge base, use DuckDuckGo to search the web.
         """),
+        # Persistent storage for the agent
+        db=PostgresDb(id="versatile-rag-storage", db_url=db_url),
         markdown=True,
         debug_mode=debug_mode,
         add_datetime_to_context=True,

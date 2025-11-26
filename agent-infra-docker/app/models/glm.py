@@ -2,7 +2,8 @@ import json
 import os
 import time
 import logging
-from typing import Any, Dict, Iterator, List, Optional, Union, Type
+from typing import Any, Dict, Iterator, List, Optional, Union, Type, AsyncIterator
+import copy
 from dataclasses import dataclass, field
 from enum import Enum
 
@@ -15,6 +16,8 @@ from pydantic import BaseModel
 
 # Import OpenAI types needed at runtime
 from openai.types.chat.chat_completion_chunk import ChatCompletionChunk
+from urllib.parse import urlparse
+from pathlib import Path
 
 # try:
 #     from zai import ZaiClient
@@ -786,6 +789,90 @@ class GLM45Provider(OpenAILike):
             glm_logger.error(f"Critical error in _parse_xml_tool_calls: {e}", exc_info=True)
             return [], content
 
+    def _clean_messages(self, messages: List[Message]) -> List[Message]:
+        """
+        Clean messages by removing unsupported content types (like 'file') 
+        that might cause 400 errors with the GLM API.
+        """
+        cleaned_messages = []
+        for msg in messages:
+            # Create a shallow copy of the message to avoid modifying the original list structure
+            # We will create a new Message object with modified content
+            
+            # Handle content
+            content = msg.content
+            if isinstance(content, list):
+                new_content = []
+                for part in content:
+                    if isinstance(part, dict):
+                        part_type = part.get("type")
+                        if part_type in ["text", "image_url"]:
+                            new_content.append(part)
+                        elif part_type == "file":
+                            # Handle file part by extracting text if possible
+                            file_url = part.get("file_url", {}).get("url", "")
+                            file_name = part.get("name", "unknown_file")
+                            
+                            # Extract path from URL
+                            if file_url.startswith("file://"):
+                                parsed = urlparse(file_url)
+                                file_path = parsed.path
+                            else:
+                                file_path = file_url
+                                
+                            # Check if file exists and is a PDF
+                            path_obj = Path(file_path)
+                            if path_obj.exists() and path_obj.suffix.lower() == ".pdf":
+                                try:
+                                    # Import here to avoid potential circular imports if agno.knowledge depends on models
+                                    from agno.knowledge.reader.pdf_reader import PDFReader
+                                    
+                                    reader = PDFReader()
+                                    docs = reader.read(file_path)
+                                    text_content = "\n\n".join([d.content for d in docs])
+                                    
+                                    new_content.append({
+                                        "type": "text", 
+                                        "text": f"\n[System Note: Content of file '{file_name}']:\n{text_content}\n[End of file content]"
+                                    })
+                                    glm_logger.info(f"Successfully extracted text from PDF: {file_name}")
+                                except Exception as e:
+                                    glm_logger.error(f"Failed to parse PDF {file_name}: {e}")
+                                    # Fallback to notification
+                                    new_content.append({
+                                        "type": "text", 
+                                        "text": f"\n[System Note: File '{file_name}' was uploaded but could not be parsed. Please use the available RAG tools to search its content.]"
+                                    })
+                            else:
+                                # Not a PDF or file not found
+                                new_content.append({
+                                    "type": "text", 
+                                    "text": f"\n[System Note: File '{file_name}' was uploaded. Please use the available RAG tools to search its content.]"
+                                })
+                        else:
+                            # Filter out other unknown types to be safe
+                            glm_logger.warning(f"Filtering out unknown message part type: {part_type}")
+                    else:
+                        # String or other format, keep it
+                        new_content.append(part)
+                
+                # Create new message with cleaned content
+                # We use model_dump to get other fields and create new instance
+                msg_data = msg.model_dump(exclude={"content"})
+                new_msg = Message(content=new_content, **msg_data)
+                cleaned_messages.append(new_msg)
+            else:
+                # Text content, keep as is
+                cleaned_messages.append(msg)
+                
+        return cleaned_messages
+
+    async def ainvoke(self, messages: List[Message], *args, **kwargs) -> ModelResponse:
+        """Override ainvoke to clean messages"""
+        cleaned_messages = self._clean_messages(messages)
+        return await super().ainvoke(cleaned_messages, *args, **kwargs)
+
+
 
 
     def _normalize_tool_xml(self, content: str) -> str:
@@ -1118,6 +1205,9 @@ class GLM45Provider(OpenAILike):
         Yields:
             ChatCompletionChunk objects with tool_calls in OpenAI format and proper thinking tags
         """
+        # Clean messages (e.g. parse PDFs)
+        messages = self._clean_messages(messages)
+
         import re
         from enum import Enum
 
@@ -1612,6 +1702,9 @@ class GLM45Provider(OpenAILike):
         """
         start_time = time.time()
 
+        # Clean messages (e.g. parse PDFs)
+        messages = self._clean_messages(messages)
+
         # ═══════════════════════════════════════════════════════════════
         # CRITICAL: Clear flag BEFORE determining thinking mode (Fix 3)
         # This ensures no state leakage between requests
@@ -1776,6 +1869,9 @@ class GLM45Provider(OpenAILike):
         Yields:
             Streamed response chunks
         """
+        # Clean messages (e.g. parse PDFs)
+        messages = self._clean_messages(messages)
+
         import re
 
         # ═══════════════════════════════════════════════════════════════

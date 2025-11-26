@@ -202,4 +202,4 @@ if __name__ == "__main__":
     print("=" * 60)
     
     # Start the enhanced AgentOS
-    agent_os.serve(app="main:app", reload=True)
+    agent_os.serve(app="main:app", reload=False)
