@@ -7,9 +7,11 @@ license-files = ["LICENSE"]
 authors = [{ name = "Agno", email = "hello@agno.com" }]
 
 dependencies = [
-  "agno==2.0.4",
-  "agno-infra==1.0.2",
+  "agno==2.6.4",
+  "agno-infra==1.1.1",
   "annotated-types==0.7.0",
+  "beautifulsoup4>=4.12.0",
+  "youtube-transcript-api>=1.2.0",
   "anyio==4.9.0",
   "certifi==2025.7.14",
   "charset-normalizer==3.4.3",
@@ -24,7 +26,7 @@ dependencies = [
   "fastapi[standard]==0.116.1",
   "gitdb==4.0.12",
   "gitpython==3.1.45",
-  "google-genai>=1.38.0",
+  "google-genai>=1.74.0",
   "h11==0.16.0",
   "httpcore==1.0.9",
   "httptools==0.6.4",
