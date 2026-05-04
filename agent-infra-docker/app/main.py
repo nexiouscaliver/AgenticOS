@@ -141,9 +141,14 @@ agent_os = AgentOS(
     teams=teams,
     workflows=workflows,
     # Shared database for session/memory storage (required in agno 2.6+)
+    # Also serves as the unified trace store — all agent/tool/model spans
+    # land here so the Studio Traces page can query everything in one place.
     db=PostgresDb(db_url=db_url),
     # Registry exposes tools/models/dbs to AgentOS Studio for visual building
     registry=get_registry(),
+    # Enable built-in OpenTelemetry tracing — requires:
+    #   opentelemetry-api, opentelemetry-sdk, openinference-instrumentation-agno
+    tracing=True,
     # Configuration for the AgentOS
     config=os_config_path,
     # debug_mode=debug_mode,
