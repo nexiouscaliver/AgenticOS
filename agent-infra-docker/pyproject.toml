@@ -79,6 +79,8 @@ dependencies = [
   "opentelemetry-api>=1.41.1",
   "opentelemetry-sdk>=1.41.1",
   "openinference-instrumentation-agno>=0.1.31",
+  "chonkie>=1.6.4",
+  "magika>=1.0.3",
 ]
 
 [project.optional-dependencies]
