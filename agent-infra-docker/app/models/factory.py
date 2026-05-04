@@ -54,21 +54,29 @@ class ModelFactory:
         cls,
         model_id: str = GEMINI_MODEL_ID,
         provider: Optional[ModelProvider] = None,
+        thinking_budget: int = 5000,
         **kwargs
     ) -> Model:
         """
-        Create a model instance.
+        Create a model instance with native Gemini thinking enabled by default.
 
         Args:
             model_id: Model identifier (defaults to gemini-2.5-flash-lite)
             provider: Model provider (auto-detected if None)
+            thinking_budget: Gemini thinking token budget (default 5000, set 0 to disable)
             **kwargs: Additional model parameters
 
         Returns:
-            Configured model instance
+            Configured model instance with thinking enabled
         """
         api_key = kwargs.pop("api_key", os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY"))
-        return Gemini(id=model_id, api_key=api_key, **kwargs)
+        return Gemini(
+            id=model_id,
+            api_key=api_key,
+            thinking_budget=thinking_budget,
+            include_thoughts=True,
+            **kwargs,
+        )
 
     @classmethod
     def get_optimal_model(
