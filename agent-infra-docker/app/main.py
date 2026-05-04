@@ -25,6 +25,7 @@ from agents.content_writer import get_content_writer_agent
 from agents.fact_checker import get_fact_checker_agent
 from agents.seo_optimizer import get_seo_optimizer_agent
 from agents.rag_agent import get_rag_agent
+from agents.kb_curator import get_kb_curator_agent
 
 # Import team and workflow systems
 from teams.research_team import get_research_team
@@ -83,7 +84,13 @@ def get_optimized_agents(debug_mode: bool = False):
         model_id="gemini-2.5-flash-lite",
         debug_mode=debug_mode
     )
-    
+
+    # Knowledge Base Curator — approval-gated add/remove for the shared research KB
+    kb_curator = get_kb_curator_agent(
+        model_id="gemini-2.5-flash-lite",
+        debug_mode=debug_mode
+    )
+
     return [
         web_agent,
         agno_assist,
@@ -92,6 +99,7 @@ def get_optimized_agents(debug_mode: bool = False):
         fact_checker,
         seo_optimizer,
         rag_agent,
+        kb_curator,
     ]
 
 
@@ -143,7 +151,7 @@ agent_os = AgentOS(
     # Shared database for session/memory storage (required in agno 2.6+)
     # Also serves as the unified trace store — all agent/tool/model spans
     # land here so the Studio Traces page can query everything in one place.
-    db=PostgresDb(db_url=db_url),
+    db=PostgresDb(id="agent-os-db", db_url=db_url),
     # Registry exposes tools/models/dbs to AgentOS Studio for visual building
     registry=get_registry(),
     # Enable built-in OpenTelemetry tracing — requires:
