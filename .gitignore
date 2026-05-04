@@ -8,5 +8,17 @@ wheels/
 
 # Virtual environments
 .venv
+.env*
 *.env
 agent-frontend/*
+
+# macOS
+.DS_Store
+
+# Tool state
+.serena/
+
+# Scratch/temp files
+magic-script.py
+agno_approvals_docs.md
+agent-infra-docker/app/calculator.py
