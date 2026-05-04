@@ -33,6 +33,7 @@ from workflows.blog_workflow import get_blog_writing_workflow, get_simple_blog_w
 # Import model factory for cost optimization
 from models.factory import ModelFactory, TaskType
 from db.session import db_url
+from registry import get_registry
 import dotenv
 dotenv.load_dotenv()
 
@@ -141,6 +142,8 @@ agent_os = AgentOS(
     workflows=workflows,
     # Shared database for session/memory storage (required in agno 2.6+)
     db=PostgresDb(db_url=db_url),
+    # Registry exposes tools/models/dbs to AgentOS Studio for visual building
+    registry=get_registry(),
     # Configuration for the AgentOS
     config=os_config_path,
     # debug_mode=debug_mode,
