@@ -7,14 +7,14 @@ from agno.agent import Agent
 from agno.db.postgres import PostgresDb
 from agno.tools.duckduckgo import DuckDuckGoTools
 from agno.knowledge import Knowledge
-from agno.knowledge.embedder.openai import OpenAIEmbedder
+from agno.knowledge.embedder.google import GeminiEmbedder
 from agno.vectordb.pgvector import PgVector, SearchType
 
 from db.session import db_url
 
 
 def get_web_agent(
-    model_id: str = "glm-4.5-air-fast",  # Local GLM with tool calling support
+    model_id: str = "gemini-2.5-flash-lite",
     debug_mode: bool = False,
 ) -> Agent:
     """
@@ -195,7 +195,7 @@ def get_web_agent(
                 db_url=db_url,
                 table_name="advanced_research_knowledge",
                 search_type=SearchType.hybrid,
-                embedder=OpenAIEmbedder(id="text-embedding-3-small"),
+                embedder=GeminiEmbedder(id="gemini-embedding-2"),
             ),
         ),
         search_knowledge=True,

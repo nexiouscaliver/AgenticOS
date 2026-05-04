@@ -6,7 +6,7 @@ load_dotenv()
 from agno.agent import Agent
 from agno.db.postgres import PostgresDb
 from agno.knowledge import Knowledge
-from agno.knowledge.embedder.openai import OpenAIEmbedder
+from agno.knowledge.embedder.google import GeminiEmbedder
 from agno.tools.duckduckgo import DuckDuckGoTools
 from agno.vectordb.pgvector import PgVector, SearchType
 
@@ -14,7 +14,7 @@ from db.session import db_url
 
 
 def get_agno_assist(
-    model_id: str = "glm-4.5-air",  # Cost-effective model for documentation
+    model_id: str = "gemini-2.5-flash-lite",  # Cost-effective model for documentation
     debug_mode: bool = False,
 ) -> Agent:
     """
@@ -106,7 +106,7 @@ def get_agno_assist(
                    \"\"\"
                    Production-ready agent with comprehensive configuration
                    \"\"\"
-                   model = ModelFactory.create_model(model_id="glm-4.5-air-fast")
+                   model = ModelFactory.create_model(model_id="gemini-2.5-flash-lite")
                    
                    return Agent(
                        id="production-agent",
@@ -144,11 +144,11 @@ def get_agno_assist(
                ```python
                # Cost-optimized model selection
                TASK_MODEL_MAP = {
-                   "simple_queries": "glm-4.5-air-fast",      # $0.00015/1K tokens
-                   "research_tasks": "glm-4.5-air-fast",     # $0.00014/1K tokens  
-                   "creative_work": "glm-4.5-air",             # $0.003/1K tokens
-                   "coding_help": "glm-4.5-air",       # $0.00014/1K tokens
-                   "multilingual": "glm-4.5-air",               # $0.0002/1K tokens
+                   "simple_queries": "gemini-2.5-flash-lite",      # $0.00015/1K tokens
+                   "research_tasks": "gemini-2.5-flash-lite",     # $0.00014/1K tokens  
+                   "creative_work": "gemini-2.5-flash-lite",             # $0.003/1K tokens
+                   "coding_help": "gemini-2.5-flash-lite",       # $0.00014/1K tokens
+                   "multilingual": "gemini-2.5-flash-lite",               # $0.0002/1K tokens
                }
                ```
 
@@ -253,7 +253,7 @@ def get_agno_assist(
                 db_url=db_url,
                 table_name="agno_expert_knowledge",
                 search_type=SearchType.hybrid,  # Best for technical documentation
-                embedder=OpenAIEmbedder(id="text-embedding-3-small"),
+                embedder=GeminiEmbedder(id="gemini-embedding-2"),
             ),
         ),
         search_knowledge=True,

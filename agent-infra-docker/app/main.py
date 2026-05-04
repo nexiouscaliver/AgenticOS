@@ -40,43 +40,43 @@ def get_optimized_agents(debug_mode: bool = False):
     
     # Enhanced Web Search Agent with cost-optimized model
     web_agent = get_web_agent(
-        model_id="glm-4.5-air-fast",  # Most cost-effective for research
+        model_id="gemini-2.5-flash-lite",  # Most cost-effective for research
         debug_mode=debug_mode
     )
     
     # Enhanced Agno Documentation Expert
     agno_assist = get_agno_assist(
-        model_id="glm-4.5-air",  # Good balance for documentation
+        model_id="gemini-2.5-flash-lite",  # Good balance for documentation
         debug_mode=debug_mode
     )
     
     # Specialized Research Analyst
     research_analyst = get_research_analyst_agent(
-        model_id="glm-4.5-air-fast",  # Cost-effective for analysis
+        model_id="gemini-2.5-flash-lite",  # Cost-effective for analysis
         debug_mode=debug_mode
     )
     
     # Professional Content Writer
     content_writer = get_content_writer_agent(
-        model_id="glm-4.5-air",  # Good for creative writing
+        model_id="gemini-2.5-flash-lite",  # Good for creative writing
         debug_mode=debug_mode
     )
     
     # Accuracy-focused Fact Checker
     fact_checker = get_fact_checker_agent(
-        model_id="glm-4.5-air",  # Reliable for verification
+        model_id="gemini-2.5-flash-lite",  # Reliable for verification
         debug_mode=debug_mode
     )
     
     # SEO Optimization Specialist
     seo_optimizer = get_seo_optimizer_agent(
-        model_id="glm-4.5-air",  # Good for analytical tasks
+        model_id="gemini-2.5-flash-lite",  # Good for analytical tasks
         debug_mode=debug_mode
     )
     
     # Versatile RAG Agent
     rag_agent = get_rag_agent(
-        model_id="glm-4.5-air",
+        model_id="gemini-2.5-flash-lite",
         debug_mode=debug_mode
     )
     
@@ -97,7 +97,7 @@ def get_team_systems(debug_mode: bool = False):
     """
     
     # Comprehensive Research Team with GLM model for coordination
-    research_team = get_research_team(model_id="glm-4.5-air", debug_mode=debug_mode)
+    research_team = get_research_team(model_id="gemini-2.5-flash-lite", debug_mode=debug_mode)
     
     return [research_team]
 

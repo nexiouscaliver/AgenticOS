@@ -17,7 +17,7 @@ from agno.knowledge.reader.json_reader import JSONReader
 from agno.knowledge.reader.website_reader import WebsiteReader
 from agno.knowledge.reader.youtube_reader import YouTubeReader
 from agno.vectordb.pgvector import PgVector, SearchType
-from agno.knowledge.embedder.openai import OpenAIEmbedder
+from agno.knowledge.embedder.google import GeminiEmbedder
 from agno.tools.duckduckgo import DuckDuckGoTools
 from agno.models.response import ModelResponse
 
@@ -167,7 +167,7 @@ class UniversalIngestor:
 
 
 def get_rag_agent(
-    model_id: str = "glm-4.5-air",
+    model_id: str = "gemini-2.5-flash-lite",
     debug_mode: bool = False,
 ) -> Agent:
     """
@@ -181,7 +181,7 @@ def get_rag_agent(
             db_url=db_url,
             table_name="rag_documents",
             search_type=SearchType.hybrid,
-            embedder=OpenAIEmbedder(id="text-embedding-3-small"), # Using OpenAI for embeddings as per plan/standard
+            embedder=GeminiEmbedder(id="gemini-embedding-2"),
         ),
     )
     

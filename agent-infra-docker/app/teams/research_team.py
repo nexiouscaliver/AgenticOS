@@ -16,7 +16,7 @@ from db.session import db_url
 from models.factory import ModelFactory, TaskType
 
 
-def get_research_team(model_id: str = "glm-4.5-air", debug_mode: bool = False) -> Team:
+def get_research_team(model_id: str = "gemini-2.5-flash-lite", debug_mode: bool = False) -> Team:
     """
     Research Team with specialized agents for comprehensive research
     
@@ -34,7 +34,7 @@ def get_research_team(model_id: str = "glm-4.5-air", debug_mode: bool = False) -
     - Source credibility assessment and citation management
     
     Args:
-        model_id: Model to use for team leader coordination (default: glm-4.5-air)
+        model_id: Model to use for team leader coordination (default: gemini-2.5-flash-lite)
         debug_mode: Enable debug logging
     """
     
@@ -50,12 +50,12 @@ def get_research_team(model_id: str = "glm-4.5-air", debug_mode: bool = False) -
     )
     
     # Initialize team members with local GLM models (with tool calling support)
-    web_research_agent = get_web_agent(model_id="glm-4.5-air-fast", debug_mode=debug_mode)
-    research_analyst = get_research_analyst_agent(model_id="glm-4.5-air-fast", debug_mode=debug_mode)
-    fact_checker = get_fact_checker_agent(model_id="glm-4.5-air", debug_mode=debug_mode)
+    web_research_agent = get_web_agent(model_id="gemini-2.5-flash-lite", debug_mode=debug_mode)
+    research_analyst = get_research_analyst_agent(model_id="gemini-2.5-flash-lite", debug_mode=debug_mode)
+    fact_checker = get_fact_checker_agent(model_id="gemini-2.5-flash-lite", debug_mode=debug_mode)
     
     # Create a secondary web agent for additional research capacity
-    secondary_web_agent = get_web_agent(model_id="glm-4.5-air-fast", debug_mode=debug_mode)
+    secondary_web_agent = get_web_agent(model_id="gemini-2.5-flash-lite", debug_mode=debug_mode)
     secondary_web_agent.id = "secondary-web-research-agent"
     secondary_web_agent.name = "Secondary Web Research Agent"
     
