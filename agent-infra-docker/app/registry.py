@@ -31,10 +31,15 @@ THINKING_BUDGET = 5000
 
 
 def _thinking(model_id: str) -> Gemini:
-    """Return a Gemini model with native thinking enabled."""
+    """Return a Gemini model with native thinking enabled.
+
+    Sets provider='Google · Thinking' so Studio shows
+    'gemini-2.5-flash-lite (Google · Thinking)' instead of a plain duplicate.
+    provider is only used for logging/display — never sent to the API.
+    """
     return Gemini(
         id=model_id,
-        name=f"{model_id} (thinking)",
+        provider="Google · Thinking",
         thinking_budget=THINKING_BUDGET,
         include_thoughts=True,
     )
