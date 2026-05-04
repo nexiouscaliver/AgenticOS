@@ -26,23 +26,7 @@ from agno.tools.csv_toolkit import CsvTools
 from agno.knowledge.embedder.google import GeminiEmbedder
 
 from db.session import db_url
-
-THINKING_BUDGET = 5000
-
-
-def _thinking(model_id: str) -> Gemini:
-    """Return a Gemini model with native thinking enabled.
-
-    Sets provider='Google · Thinking' so Studio shows
-    'gemini-2.5-flash-lite (Google · Thinking)' instead of a plain duplicate.
-    provider is only used for logging/display — never sent to the API.
-    """
-    return Gemini(
-        id=model_id,
-        provider="Google · Thinking",
-        thinking_budget=THINKING_BUDGET,
-        include_thoughts=True,
-    )
+from models.gemini_thinking import gemini_thinking
 
 
 def _standard(model_id: str) -> Gemini:
@@ -75,10 +59,11 @@ def get_registry() -> Registry:
             _standard("gemini-2.5-flash-lite"),
             _standard("gemini-2.5-flash"),
             _standard("gemini-2.5-pro"),
-            # ── Thinking variants (5 000 token budget) ──────────────────
-            _thinking("gemini-2.5-flash-lite"),
-            _thinking("gemini-2.5-flash"),
-            _thinking("gemini-2.5-pro"),
+            # ── Thinking variants — id has '-thinking' suffix so Studio
+            #    treats them as distinct entries (unique id = unique selection)
+            gemini_thinking("gemini-2.5-flash-lite"),
+            gemini_thinking("gemini-2.5-flash"),
+            gemini_thinking("gemini-2.5-pro"),
         ],
         dbs=[shared_db],
         vector_dbs=[rag_vector_db],
