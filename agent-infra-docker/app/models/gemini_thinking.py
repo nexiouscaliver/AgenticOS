@@ -8,12 +8,18 @@ Studio sees six distinct entries (three standard + three thinking).
 The '-thinking' suffix exists only for Studio/registry display. Before every
 API call the id is swapped to the real Gemini model id; it is restored
 afterward so nothing outside the call ever sees the modified value.
+
+DB deserialization: Agno reconstructs models by calling
+    get_model(f"{provider}:{id}")
+which maps "Google" to a plain Gemini — losing our override. To fix this,
+_install_agno_patch() below monkey-patches Agno's model registry so that any
+id ending in '-thinking' is reconstructed as GeminiThinking rather than Gemini.
 """
 
 from __future__ import annotations
 
 from contextlib import contextmanager
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any, AsyncIterator, Dict, Iterator, List, Optional, Type, Union
 
 from agno.models.google.gemini import Gemini
@@ -35,20 +41,13 @@ class GeminiThinking(Gemini):
     API →  'gemini-2.5-flash-lite'             (actual Gemini API model id)
     """
 
-    # Populated in __post_init__ — the real API id without '-thinking' suffix
-    _api_id: str = field(default="", init=False, repr=False)
-
-    def __post_init__(self) -> None:
-        super().__post_init__()
-        self._api_id = self.id.removesuffix(THINKING_SUFFIX)
-
     # ── context manager ──────────────────────────────────────────────────────
 
     @contextmanager
     def _real_id(self):
         """Temporarily replace self.id with the real Gemini API model id."""
         display = self.id
-        self.id = self._api_id
+        self.id = display.removesuffix(THINKING_SUFFIX)
         try:
             yield
         finally:
@@ -139,10 +138,47 @@ class GeminiThinking(Gemini):
 
 
 def gemini_thinking(model_id: str, thinking_budget: int = DEFAULT_THINKING_BUDGET) -> GeminiThinking:
-    """Convenience factory: returns a GeminiThinking for the given base model id."""
+    """Convenience factory: returns a GeminiThinking for the given base model id.
+
+    provider stays 'Google' so Agno can deserialize agents from the database.
+    The '-thinking' suffix in id is enough to make Studio treat this as a
+    distinct entry from the standard variant.
+    """
     return GeminiThinking(
         id=f"{model_id}{THINKING_SUFFIX}",
-        provider="Google · Thinking",
         thinking_budget=thinking_budget,
         include_thoughts=True,
     )
+
+
+def _install_agno_patch() -> None:
+    """Patch Agno's model registry so ids ending in '-thinking' round-trip correctly.
+
+    When Agno loads an agent from the database it calls:
+        get_model("Google:gemini-2.5-flash-lite-thinking")
+    which normally returns a plain Gemini — losing our id-swap override.
+    This patch intercepts that lookup and returns a GeminiThinking instance
+    so the '-thinking' suffix is stripped before every API call.
+    """
+    import agno.models.utils as _utils
+
+    if getattr(_utils, "_gemini_thinking_patched", False):
+        return
+
+    _original = _utils._get_model_class
+
+    def _patched(model_id: str, model_provider: str):
+        if model_provider == "google" and model_id.endswith(THINKING_SUFFIX):
+            return GeminiThinking(
+                id=model_id,
+                thinking_budget=DEFAULT_THINKING_BUDGET,
+                include_thoughts=True,
+            )
+        return _original(model_id, model_provider)
+
+    _utils._get_model_class = _patched
+    _utils._gemini_thinking_patched = True  # type: ignore[attr-defined]
+
+
+# Auto-patch when this module is imported so DB deserialization always works.
+_install_agno_patch()
