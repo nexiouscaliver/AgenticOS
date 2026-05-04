@@ -9,6 +9,7 @@ Features:
 - Advanced prompts and professional-quality outputs
 """
 
+import argparse
 import asyncio
 import os
 from pathlib import Path
@@ -149,61 +150,64 @@ agent_os = AgentOS(
 app = agent_os.get_app()
 
 
-async def initialize_knowledge_bases():
-    """
-    Initialize knowledge bases for enhanced agents
-    """
+DEFAULT_KB_URL = "https://docs.agno.com/llms-full.txt"
+
+
+async def initialize_knowledge_bases(kb_url: str):
+    """Load a URL into the Agno Assist knowledge base."""
     try:
-        # Add comprehensive Agno documentation
         if hasattr(agents[1], 'knowledge') and agents[1].knowledge:
             await agents[1].knowledge.add_content_async(
                 name="Agno Framework Documentation",
-                url="https://docs.agno.com/llms-full.txt",
+                url=kb_url,
             )
-            print("✅ Agno documentation loaded successfully")
-        
-        # Add additional knowledge sources
-        # Note: Add more knowledge sources as needed for specialized agents
-        
+            print(f"✅ Knowledge base loaded: {kb_url}")
     except Exception as e:
         print(f"⚠️ Knowledge base initialization warning: {e}")
         print("📝 Agents will still function with web search capabilities")
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="AgenticOS Multi-Agent System")
+    parser.add_argument(
+        "--loadkb",
+        nargs="?",
+        const=DEFAULT_KB_URL,
+        default=None,
+        metavar="URL",
+        help=f"Load a URL into the knowledge base before starting. "
+             f"Omit URL to use the default: {DEFAULT_KB_URL}",
+    )
+    args = parser.parse_args()
+
     print("🚀 Starting AgenticOS Enhanced Multi-Agent System")
     print("=" * 60)
     print("📊 Available Agents:")
     for i, agent in enumerate(agents, 1):
         print(f"   {i}. {agent.name} - {agent.id}")
-    
+
     print("🤝 Available Teams:")
     for i, team in enumerate(teams, 1):
         print(f"   {i}. {team.name} - {team.id}")
-    
+
     print("🔄 Available Workflows:")
     for i, workflow in enumerate(workflows, 1):
         print(f"   {i}. {workflow.name} - {workflow.id}")
-    
-    print("💰 Cost Optimization Features:")
-    print("   • Model support: Local GLM (Air/Fast)")
-    print("   • Intelligent model selection based on task requirements")
-    print("   • Cost-effective defaults with performance optimization")
-    
+
     print("🎯 Key Capabilities:")
     print("   • Advanced research with multi-agent coordination")
     print("   • Professional blog writing with SEO optimization")
     print("   • Fact-checking and quality assurance workflows")
     print("   • Comprehensive documentation assistance")
-    
+
     print("⚙️ Initialization:")
-    print("   • Loading knowledge bases...")
-    
-    # Initialize knowledge bases asynchronously
-    asyncio.run(initialize_knowledge_bases())
-    
+    if args.loadkb:
+        print(f"   • Loading knowledge base from: {args.loadkb}")
+        asyncio.run(initialize_knowledge_bases(args.loadkb))
+    else:
+        print("   • Skipping knowledge base load (use --loadkb to enable)")
+
     print("   • Starting web server...")
     print("=" * 60)
-    
-    # Start the enhanced AgentOS
+
     agent_os.serve(app="main:app", reload=False)

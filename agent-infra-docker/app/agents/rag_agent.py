@@ -21,7 +21,7 @@ from agno.knowledge.embedder.google import GeminiEmbedder
 from agno.tools.duckduckgo import DuckDuckGoTools
 from agno.models.response import ModelResponse
 
-from app.models.factory import ModelFactory
+from models.factory import ModelFactory
 
 
 from db.session import db_url
