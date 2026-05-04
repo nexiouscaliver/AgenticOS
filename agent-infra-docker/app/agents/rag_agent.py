@@ -214,6 +214,7 @@ def get_rag_agent(
         markdown=True,
         debug_mode=debug_mode,
         add_datetime_to_context=True,
+        enable_session_summaries=True,
     )
     
     # Attach the ingestor to the agent instance for easy access
