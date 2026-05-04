@@ -14,6 +14,7 @@ import os
 from pathlib import Path
 
 from agno.os import AgentOS
+from agno.db.postgres import PostgresDb
 
 # Import enhanced agents with detailed prompts
 from agents.web_agent import get_web_agent
@@ -30,6 +31,7 @@ from workflows.blog_workflow import get_blog_writing_workflow, get_simple_blog_w
 
 # Import model factory for cost optimization
 from models.factory import ModelFactory, TaskType
+from db.session import db_url
 import dotenv
 dotenv.load_dotenv()
 
@@ -136,6 +138,8 @@ agent_os = AgentOS(
     agents=agents,
     teams=teams,
     workflows=workflows,
+    # Shared database for session/memory storage (required in agno 2.6+)
+    db=PostgresDb(db_url=db_url),
     # Configuration for the AgentOS
     config=os_config_path,
     # debug_mode=debug_mode,
