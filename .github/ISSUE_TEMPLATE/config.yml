@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Agno Framework Documentation
+    url: https://docs.agno.com
+    about: Check the official Agno documentation before opening an issue.
+  - name: Agno Framework Discussions
+    url: https://github.com/agno-agi/agno/discussions
+    about: Ask questions and discuss Agno framework features with the community.
